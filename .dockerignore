@@ -1,0 +1,79 @@
+# ==========================================================================
+# Contexto de build de Docker
+#
+# REGLA IMPORTANTE: en .dockerignore un patron sin "/" solo coincide en la
+# raiz. Por eso TODO lo que este dentro de backend/ o frontend/ necesita el
+# prefijo "**/" (p.ej. **/node_modules, no node_modules).
+#
+# NO excluir package-lock.json: el build del frontend usa `npm ci`, que
+# falla sin el lockfile.
+# ==========================================================================
+
+# --- Git ---
+.git
+.gitignore
+.gitattributes
+
+# --- Python ---
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache
+**/.coverage
+**/htmlcov
+**/*.egg-info
+**/env
+**/venv
+**/ENV
+**/build
+**/dist
+**/downloads
+**/wheels
+**/.mypy_cache
+**/.ruff_cache
+
+# --- Node ---
+**/node_modules
+**/npm-debug.log*
+**/yarn-error.log*
+**/.pnpm-debug.log*
+
+# --- Frontend ya compilado (se regenera con `npm run build`) ---
+frontend/dist
+frontend/.vite
+
+# --- Entorno: nunca hornear secretos en la imagen ---
+# El backend recibe sus variables por docker-compose (environment:)
+.env
+**/.env
+**/.env.local
+**/.env.*.local
+
+# --- Datos locales del backend (se montan como volumen) ---
+backend/media
+backend/staticfiles
+
+# --- Editores / SO ---
+**/.vscode
+**/.idea
+**/*.swp
+**/*.swo
+**/*~
+**/.DS_Store
+**/Thumbs.db
+
+# --- Docker / docs / CI (no se necesitan dentro de las imagenes) ---
+**/Dockerfile*
+.dockerignore
+docker-compose*.yml
+**/docker*.ps1
+**/iniciar.ps1
+docs/
+**/*.md
+estructura.txt
+
+# --- Tests ---
+**/test
+**/tests
+**/coverage
