@@ -1,0 +1,133 @@
+# ==============================================================================
+# Modo DESARROLLO con hot-reload
+#   - Django corre con runserver (autoreload) en 8080
+#   - Vite corre el dev server en 5173 y hace proxy de /api, /media y /static
+#     hacia el contenedor "backend"
+#   - Postgres en 5432
+#
+# Uso:  docker compose up --build
+# ============================================================================
+
+services:
+  # ------------------------------------------------------------------------------
+  # Base de datos PostgreSQL
+  # ------------------------------------------------------------------------------
+  db:
+    image: postgres:15-alpine
+    container_name: practicas_db
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-proyeccion_social}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - practicas_network
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-proyeccion_social}
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------------------
+  # Backend - Django (codigo montado desde el host -> hot reload)
+  # ------------------------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: practicas_backend
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:${BACKEND_PORT:-8080}"
+    ports:
+      - "${BACKEND_PORT:-8080}:${BACKEND_PORT:-8080}"
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
+      DJANGO_SETTINGS_ENV: ${DJANGO_SETTINGS_ENV:-local}
+      DEBUG: ${DEBUG:-True}
+      SECRET_KEY: ${SECRET_KEY:-django-insecure-dev-key-no-usar-en-produccion}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-*}
+      DB_NAME: ${DB_NAME:-proyeccion_social}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_HOST: db
+      DB_PORT: 5432
+      IMAGE_STORAGE: ${IMAGE_STORAGE:-local}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+    volumes:
+      - ./backend:/app
+      - media_files:/app/media
+    networks:
+      - practicas_network
+    depends_on:
+      db:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------------------
+  # Frontend - React + Vite dev server (codigo montado desde el host -> HMR)
+  # ------------------------------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: practicas_frontend
+    command: npm run dev
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    environment:
+      # Destino del proxy de Vite. Dentro de la red de Docker el backend se
+      # llama "backend"; localmente (sin Docker) se usa localhost:8080.
+      VITE_PROXY_TARGET: ${VITE_PROXY_TARGET:-http://backend:8080}
+      # En Windows los bind mounts no siempre emiten eventos de archivo, asi que
+      # el watcher usa polling. Poner en false si watch deja de detectar cambios.
+      VITE_USE_POLLING: ${VITE_USE_POLLING:-true}
+    volumes:
+      - ./frontend:/app
+      # Volumen con nombre para conservar los node_modules de la imagen (linux).
+      # Asi no se usan los binarios win32 del host ni se pierde el cache de npm.
+      - frontend_node_modules:/app/node_modules
+    networks:
+      - practicas_network
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------------------
+  # Redis - opcional, solo si el proyecto lo necesita:
+  #   docker compose --profile redis up
+  # ------------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: practicas_redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - practicas_network
+    restart: unless-stopped
+    profiles:
+      - redis
+
+volumes:
+  postgres_data:
+  media_files:
+  frontend_node_modules:
+  redis_data:
+
+networks:
+  practicas_network:
+    driver: bridge
