@@ -5,7 +5,7 @@ roles ni usuarios (escalada de privilegios).
 S6: producción debe validar la fortaleza de las contraseñas.
 """
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 
 from apps.usuarios.models import Rol, UsuarioRol
@@ -111,7 +111,6 @@ class S6PasswordValidatorsProdTest(TestCase):
         self.assertIn('MinimumLengthValidator', fuente)
 
     def test_password_debil_rechazada_con_validadores_prod(self):
-        from django.test import override_settings
         from django.contrib.auth.password_validation import validate_password
         from django.core.exceptions import ValidationError
         validadores = [
@@ -121,6 +120,6 @@ class S6PasswordValidatorsProdTest(TestCase):
             {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
             {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
         ]
-        with override_settings(AUTH_PASSWORD_VALIDATORS=validadores):
-            with self.assertRaises(ValidationError):
-                validate_password('1')
+        with override_settings(AUTH_PASSWORD_VALIDATORS=validadores), \
+                self.assertRaises(ValidationError):
+            validate_password('1')
