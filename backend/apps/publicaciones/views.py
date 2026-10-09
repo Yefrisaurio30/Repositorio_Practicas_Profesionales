@@ -2,7 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.exceptions import PermissionDenied
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
@@ -22,9 +22,17 @@ def es_staff(user):
     )
 
 
+class EsStaffOSoloLectura(BasePermission):
+    """Lectura pública; escritura solo para staff (S3)."""
+
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS or es_staff(request.user)
+
+
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
+    permission_classes = [EsStaffOSoloLectura]
     pagination_class = None
 
 

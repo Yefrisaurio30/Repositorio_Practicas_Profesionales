@@ -925,3 +925,52 @@ class CU22_ImagenesLocalesTest(TestCase):
             'archivo': archivo, 'publicacion': otro.pk, 'nombre': 'Ajena',
         }, format='multipart')
         self.assertEqual(resp.status_code, 403)
+
+
+# ======================================================================
+# S3 (Fase 1): Categorías — lectura pública, escritura solo staff
+# ======================================================================
+
+
+class S3CategoriasPermisosTest(TestCase):
+    """Un usuario registrado no puede crear, editar ni borrar categorías."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.usuario = crear_usuario()
+        self.staff = crear_staff()
+        self.categoria = crear_categoria()
+
+    def test_lectura_publica_anonima(self):
+        resp = self.client.get('/api/publicaciones/categorias/')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_usuario_no_crea_categoria(self):
+        self.client.force_authenticate(user=self.usuario)
+        resp = self.client.post('/api/publicaciones/categorias/', {
+            'nombre': 'Intrusa', 'descripcion': 'x',
+        }, format='json')
+        self.assertIn(resp.status_code, [401, 403])
+        self.assertFalse(Categoria.objects.filter(nombre='Intrusa').exists())
+
+    def test_usuario_no_edita_categoria(self):
+        self.client.force_authenticate(user=self.usuario)
+        resp = self.client.patch(
+            f'/api/publicaciones/categorias/{self.categoria.pk}/',
+            {'descripcion': 'Hackeada'}, format='json')
+        self.assertIn(resp.status_code, [401, 403])
+
+    def test_usuario_no_borra_categoria(self):
+        self.client.force_authenticate(user=self.usuario)
+        resp = self.client.delete(
+            f'/api/publicaciones/categorias/{self.categoria.pk}/')
+        self.assertIn(resp.status_code, [401, 403])
+        self.assertTrue(
+            Categoria.objects.filter(pk=self.categoria.pk).exists())
+
+    def test_staff_si_gestiona_categorias(self):
+        self.client.force_authenticate(user=self.staff)
+        resp = self.client.post('/api/publicaciones/categorias/', {
+            'nombre': 'Autorizada', 'descripcion': 'ok',
+        }, format='json')
+        self.assertEqual(resp.status_code, 201)
