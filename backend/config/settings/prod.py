@@ -2,13 +2,18 @@ from config.settings.local import *  # noqa: F401, F403
 
 import os
 
+from django.core.exceptions import ImproperlyConfigured
+
 # ======================================================================
 # PRODUCTION SETTINGS - Sistema de Proyeccion Social UNIMINUTO
 # ======================================================================
 
 DEBUG = False
 
-SECRET_KEY = os.environ.get('SECRET_KEY', SECRET_KEY)  # noqa: F405
+# En producción la clave es obligatoria: fallar sin ella (S5).
+SECRET_KEY = os.environ['SECRET_KEY']
+if SECRET_KEY.startswith('django-insecure') or len(SECRET_KEY) < 40:
+    raise ImproperlyConfigured('SECRET_KEY de producción inválida')
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
