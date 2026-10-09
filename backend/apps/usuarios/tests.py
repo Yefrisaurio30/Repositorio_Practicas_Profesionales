@@ -100,6 +100,29 @@ class S1GestionUsuariosTest(TestCase):
         self.assertTrue(User.objects.filter(pk=otro_admin.pk).exists())
 
 
+class C1SettingsReorgTest(TestCase):
+    """base.py común; local/prod heredan de base; settings.py muerto eliminado."""
+
+    @staticmethod
+    def _settings_dir():
+        import pathlib
+        return pathlib.Path(__file__).resolve().parent.parent.parent / 'config' / 'settings'
+
+    def test_existe_base_y_no_settings_muerto(self):
+        d = self._settings_dir()
+        self.assertTrue((d / 'base.py').exists())
+        self.assertFalse((d.parent / 'settings.py').exists())
+
+    def test_prod_hereda_de_base_no_de_local(self):
+        prod = (self._settings_dir() / 'prod.py').read_text(encoding='utf-8')
+        self.assertIn('config.settings.base', prod)
+        self.assertNotIn('config.settings.local', prod)
+
+    def test_local_hereda_de_base(self):
+        local = (self._settings_dir() / 'local.py').read_text(encoding='utf-8')
+        self.assertIn('config.settings.base', local)
+
+
 class S6PasswordValidatorsProdTest(TestCase):
     """prod.py debe declarar validadores (no heredar la lista vacía de local)."""
 

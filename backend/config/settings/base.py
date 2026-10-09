@@ -1,14 +1,9 @@
+"""Configuración común. local.py y prod.py heredan de aquí (C1)."""
 import os
 from pathlib import Path
-from decouple import config, Csv
+from decouple import config
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-production')
-
-DEBUG = config('DEBUG', default=True, cast=bool)
-
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -17,16 +12,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
     'django_filters',
     'corsheaders',
-
     'apps.publicaciones',
     'apps.imagenes',
     'apps.comentarios',
     'apps.actividad',
     'apps.reportes',
+    'apps.usuarios',
+    'apps.solicitudes',
 ]
 
 MIDDLEWARE = [
@@ -71,13 +66,6 @@ DATABASES = {
     }
 }
 
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
-
 LANGUAGE_CODE = 'es-co'
 TIME_ZONE = 'America/Bogota'
 USE_I18N = True
@@ -89,15 +77,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Almacenamiento de imagenes: 'local' (carpeta media/) o 'supabase'.
+IMAGE_STORAGE = config('IMAGE_STORAGE', default='local')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS
-CORS_ALLOWED_ORIGINS = config(
-    'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:5173'
-).split(',')
-
-# DRF
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -114,7 +98,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 12,
 }
 
-# Supabase
 SUPABASE_URL = config('SUPABASE_URL', default='')
 SUPABASE_KEY = config('SUPABASE_KEY', default='')
 SUPABASE_BUCKET = config('SUPABASE_BUCKET', default='publicaciones-images')
