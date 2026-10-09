@@ -974,3 +974,44 @@ class S3CategoriasPermisosTest(TestCase):
             'nombre': 'Autorizada', 'descripcion': 'ok',
         }, format='json')
         self.assertEqual(resp.status_code, 201)
+
+
+# ======================================================================
+# L1 (Fase 2): editar una publicada la devuelve a revisión
+# ======================================================================
+
+
+class L1EditarPublicadaTest(TestCase):
+    """El autor no puede reescribir una PUBLICADA sin pasar por moderación."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.autor = crear_usuario()
+        self.staff = crear_staff()
+        self.pub = crear_publicacion(
+            estado=Publicacion.Estado.PUBLICADA, usuario=self.autor)
+
+    def test_editar_publicada_vuelve_a_revision(self):
+        self.client.force_authenticate(user=self.autor)
+        resp = self.client.patch(
+            f'/api/publicaciones/publicaciones/{self.pub.pk}/',
+            {'contenido': 'Contenido reescrito sin revisión.'}, format='json')
+        self.assertEqual(resp.status_code, 200)
+        self.pub.refresh_from_db()
+        self.assertEqual(self.pub.estado, Publicacion.Estado.EN_REVISION)
+
+    def test_autor_no_publica_directo(self):
+        self.client.force_authenticate(user=self.autor)
+        resp = self.client.patch(
+            f'/api/publicaciones/publicaciones/{self.pub.pk}/',
+            {'estado': 'PUBLICADA'}, format='json')
+        self.assertEqual(resp.status_code, 403)
+
+    def test_staff_edita_sin_cambiar_estado(self):
+        self.client.force_authenticate(user=self.staff)
+        resp = self.client.patch(
+            f'/api/publicaciones/publicaciones/{self.pub.pk}/',
+            {'contenido': 'Ajuste editorial.'}, format='json')
+        self.assertEqual(resp.status_code, 200)
+        self.pub.refresh_from_db()
+        self.assertEqual(self.pub.estado, Publicacion.Estado.PUBLICADA)

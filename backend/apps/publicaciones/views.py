@@ -80,6 +80,12 @@ class PublicacionViewSet(viewsets.ModelViewSet):
         estado = serializer.validated_data.get('estado')
         if estado in (Publicacion.Estado.PUBLICADA, Publicacion.Estado.ARCHIVADA):
             raise PermissionDenied('Solo el administrador puede publicar o archivar.')
+        # Lo ya publicado/archivado vuelve a revisión al editarse (L1).
+        if serializer.instance.estado in (
+            Publicacion.Estado.PUBLICADA, Publicacion.Estado.ARCHIVADA,
+        ):
+            serializer.save(estado=Publicacion.Estado.EN_REVISION)
+            return
         serializer.save()
 
     @action(detail=True, methods=['post'], url_path='publicar')
