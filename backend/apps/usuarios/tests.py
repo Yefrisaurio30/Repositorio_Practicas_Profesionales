@@ -123,6 +123,26 @@ class C1SettingsReorgTest(TestCase):
         self.assertIn('config.settings.base', local)
 
 
+class S7LoginThrottleTest(TestCase):
+    """Fuerza bruta en login limitada a 5 intentos/min (S7)."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.client = APIClient()
+        User.objects.create_user(username='victima_login', password='Clave12345!')
+
+    def test_sexto_intento_rapido_es_429(self):
+        estados = []
+        for _ in range(6):
+            resp = self.client.post('/api/auth/login/', {
+                'username': 'victima_login', 'password': 'ClaveMala',
+            }, format='json')
+            estados.append(resp.status_code)
+        self.assertEqual(estados[-1], 429)
+        self.assertTrue(all(e in (401, 429) for e in estados))
+
+
 class S6PasswordValidatorsProdTest(TestCase):
     """prod.py debe declarar validadores (no heredar la lista vacía de local)."""
 

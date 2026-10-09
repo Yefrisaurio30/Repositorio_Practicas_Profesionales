@@ -96,6 +96,17 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 12,
+    # Límite de intentos en endpoints sensibles (S7). El login usa el
+    # ámbito 'login' (5/min); el resto cae en 'anon'/'user'.
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '60/min',
+        'user': '300/min',
+        'login': '5/min',
+    },
 }
 
 SUPABASE_URL = config('SUPABASE_URL', default='')

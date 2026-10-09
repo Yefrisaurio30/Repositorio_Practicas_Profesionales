@@ -5,6 +5,7 @@ from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.throttling import ScopedRateThrottle
 from django.db.models import Q
 from apps.actividad.models import RegistroActividad
 from .models import Rol
@@ -37,6 +38,8 @@ class IsAdminUser(IsStaffOnly):
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class LoginView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'login'
 
     def post(self, request):
         identifier = request.data.get('username', request.data.get('email', '')).strip()
