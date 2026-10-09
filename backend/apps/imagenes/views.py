@@ -26,6 +26,12 @@ class ImagenViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if es_staff(user):
             return qs
+        # En escritura solo las publicaciones propias (S2): así un
+        # DELETE/PATCH sobre imágenes ajenas devuelve 404.
+        if self.action in ('update', 'partial_update', 'destroy'):
+            if not user.is_authenticated:
+                return qs.none()
+            return qs.filter(publicacion__usuario=user)
         if user.is_authenticated:
             return qs.filter(
                 Q(publicacion__usuario=user)
@@ -43,6 +49,12 @@ class ImagenViewSet(viewsets.ModelViewSet):
         publicacion = serializer.validated_data['publicacion']
         if not es_staff(user) and publicacion.usuario_id != user.pk:
             raise PermissionDenied('Solo puedes subir imágenes a tus propias publicaciones.')
+        serializer.save()
+
+    def perform_update(self, serializer):
+        # La imagen no se puede mover a otra publicación (S2).
+        if 'publicacion' in serializer.validated_data:
+            raise PermissionDenied('No puedes mover una imagen a otra publicación.')
         serializer.save()
 
     def perform_destroy(self, instance):
