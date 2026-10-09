@@ -13,11 +13,16 @@ from apps.imagenes.models import Imagen
 from apps.publicaciones.models import Categoria, Publicacion
 
 
-PNG_MINIMO = (
-    b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01'
-    b'\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00'
-    b'\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
-)
+def png_valido():
+    """Genera un PNG real de 1x1 con Pillow (válido para ImageField)."""
+    import io
+    from PIL import Image
+    buf = io.BytesIO()
+    Image.new('RGB', (1, 1), color='red').save(buf, format='PNG')
+    return buf.getvalue()
+
+
+PNG_MINIMO = None  # se genera por test con png_valido()
 
 _contador = 0
 
@@ -124,5 +129,5 @@ class S4TipoArchivoTest(TestCase):
         self.assertEqual(resp.status_code, 400)
 
     def test_acepta_png_real(self):
-        resp = self._subir('portada.png', PNG_MINIMO, 'image/png')
+        resp = self._subir('portada.png', png_valido(), 'image/png')
         self.assertEqual(resp.status_code, 201)

@@ -892,11 +892,11 @@ class CU22_ImagenesLocalesTest(TestCase):
         self.pub = crear_publicacion(usuario=self.staff)
         self.client.force_authenticate(user=self.staff)
         from django.core.files.uploadedfile import SimpleUploadedFile
-        self.png = (
-            b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01'
-            b'\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00'
-            b'\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
-        )
+        import io
+        from PIL import Image
+        buf = io.BytesIO()
+        Image.new('RGB', (1, 1), color='red').save(buf, format='PNG')
+        self.png = buf.getvalue()
         self.SimpleUploadedFile = SimpleUploadedFile
 
     def test_subir_imagen_local(self):
