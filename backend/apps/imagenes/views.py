@@ -5,12 +5,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import PermissionDenied
 from .models import Imagen
 from .serializers import ImagenSerializer, ImagenUploadSerializer
-
-
-def es_staff(user):
-    return (
-        user.is_authenticated and (user.is_staff or user.is_superuser)
-    )
+from apps.usuarios.permissions import es_staff
 
 
 ESTADOS_VISIBLES = ['PUBLICADA', 'ARCHIVADA']

@@ -123,6 +123,24 @@ class C1SettingsReorgTest(TestCase):
         self.assertIn('config.settings.base', local)
 
 
+class L2StaffUnificadoTest(TestCase):
+    """Una sola es_staff() y un solo ROLES_STAFF en todo el backend (L2)."""
+
+    def test_misma_funcion_en_todas_las_apps(self):
+        from apps.usuarios import permissions as central
+        from apps.publicaciones import views as pub_v
+        from apps.imagenes import views as img_v
+        self.assertTrue(hasattr(central, 'es_staff'))
+        self.assertIs(pub_v.es_staff, central.es_staff)
+        self.assertIs(img_v.es_staff, central.es_staff)
+
+    def test_roles_staff_unicos(self):
+        from apps.usuarios import permissions as central
+        from apps.usuarios import signals as senales
+        self.assertTrue(hasattr(central, 'ROLES_STAFF'))
+        self.assertIs(senales.ROLES_STAFF, central.ROLES_STAFF)
+
+
 class S7LoginThrottleTest(TestCase):
     """Fuerza bruta en login limitada a 5 intentos/min (S7)."""
 

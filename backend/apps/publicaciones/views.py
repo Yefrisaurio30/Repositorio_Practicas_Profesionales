@@ -14,12 +14,7 @@ from .serializers import (
     CategoriaSerializer,
 )
 from .filters import PublicacionFilter, PublicacionPublicFilter
-
-
-def es_staff(user):
-    return (
-        user.is_authenticated and (user.is_staff or user.is_superuser)
-    )
+from apps.usuarios.permissions import es_staff
 
 
 class EsStaffOSoloLectura(BasePermission):
