@@ -19,15 +19,19 @@ User = get_user_model()
 
 
 from .permissions import IsStaffOrHasRole as IsStaffOnly
+from .permissions import SoloSuperadmin, es_superadmin
 
 
 class IsAdminUser(IsStaffOnly):
     def has_object_permission(self, request, view, obj):
-        return (
-            request.user.is_superuser
-            and obj.pk != request.user.pk
-            and not obj.is_superuser
-        )
+        if not es_superadmin(request.user):
+            return False
+        if obj.pk == request.user.pk:
+            return False
+        # Solo un superusuario puede actuar sobre otro superusuario.
+        if obj.is_superuser and not request.user.is_superuser:
+            return False
+        return True
 
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
@@ -117,7 +121,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ('list', 'retrieve'):
             return [IsStaffOnly()]
-        return [IsStaffOnly()]
+        return [SoloSuperadmin()]
 
     def get_queryset(self):
         qs = User.objects.all().order_by('-date_joined')
@@ -149,6 +153,14 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                 {'detail': 'No puede eliminar a otro superusuario.'},
                 status=status.HTTP_403_FORBIDDEN,
             )
+        if (
+            not request.user.is_superuser
+            and user.roles_rel.filter(rol__nombre='Superadmin').exists()
+        ):
+            return Response(
+                {'detail': 'Solo un superusuario puede eliminar a un Superadmin.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         username = user.username
         user.delete()
         RegistroActividad.objects.create(
@@ -161,18 +173,29 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         user = self.get_object()
-        if user.pk == request.user.pk and 'is_active' in request.data and request.data['is_active'] is False:
+        if user.pk == request.user.pk:
             return Response(
-                {'detail': 'No puede desactivar su propia cuenta desde aqui.'},
+                {'detail': 'No puede modificar su propia cuenta desde aqui.'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        # Compat DER: aceptar roles: ["Admin", ...] además de is_staff
+        if user.is_superuser and not request.user.is_superuser:
+            return Response(
+                {'detail': 'Solo un superusuario puede modificar a otro superusuario.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        # Compat DER: aceptar roles: ["Admin", ...] además de is_staff.
+        # Solo roles existentes: no se crean al vuelo (S1).
         roles = request.data.get('roles')
         if isinstance(roles, list):
             from .models import Rol, UsuarioRol
+            existentes = list(Rol.objects.filter(nombre__in=roles))
+            if len(existentes) != len(set(roles)):
+                return Response(
+                    {'detail': 'Rol inexistente.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             UsuarioRol.objects.filter(usuario=user).exclude(rol__nombre__in=roles).delete()
-            for nombre in roles:
-                rol, _ = Rol.objects.get_or_create(nombre=nombre, defaults={'descripcion': nombre})
+            for rol in existentes:
                 UsuarioRol.objects.get_or_create(usuario=user, rol=rol, defaults={'asignado_por': request.user})
             # sincroniza is_staff via señal
         return super().partial_update(request, *args, **kwargs)
@@ -186,7 +209,7 @@ class RolViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class AsignarRolView(APIView):
-    permission_classes = [IsStaffOnly]
+    permission_classes = [SoloSuperadmin]
 
     def post(self, request):
         from .models import Rol, UsuarioRol
@@ -198,7 +221,20 @@ class AsignarRolView(APIView):
             usuario = User.objects.get(pk=usuario_id)
         except User.DoesNotExist:
             return Response({'detail': 'Usuario no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
-        rol, _ = Rol.objects.get_or_create(nombre=rol_nombre, defaults={'descripcion': rol_nombre})
+        if usuario.pk == request.user.pk:
+            return Response(
+                {'detail': 'No puede modificar sus propios roles desde aqui.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if usuario.is_superuser and not request.user.is_superuser:
+            return Response(
+                {'detail': 'Solo un superusuario puede modificar a otro superusuario.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        # Solo roles existentes: no se crean al vuelo (S1).
+        rol = Rol.objects.filter(nombre=rol_nombre).first()
+        if rol is None:
+            return Response({'detail': 'Rol inexistente.'}, status=status.HTTP_400_BAD_REQUEST)
         _, created = UsuarioRol.objects.get_or_create(usuario=usuario, rol=rol, defaults={'asignado_por': request.user})
         return Response({'detail': 'Rol asignado.' if created else 'Ya tenía el rol.', 'rol': rol.nombre})
 
@@ -206,5 +242,10 @@ class AsignarRolView(APIView):
         from .models import UsuarioRol
         usuario_id = request.data.get('usuario')
         rol_nombre = request.data.get('rol')
+        if usuario_id is not None and int(usuario_id) == request.user.pk:
+            return Response(
+                {'detail': 'No puede modificar sus propios roles desde aqui.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         UsuarioRol.objects.filter(usuario_id=usuario_id, rol__nombre=rol_nombre).delete()
         return Response({'detail': 'Rol retirado.'})
