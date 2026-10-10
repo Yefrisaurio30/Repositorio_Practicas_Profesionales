@@ -6,20 +6,14 @@ import {
 } from '../../services/comentariosService.js'
 import { useToast } from '../../context/ToastContext.jsx'
 import { getApiErrorMessage } from '../../utils/errores.js'
+import EstadoPill from '../../components/EstadoPill.jsx'
+import { ESTADOS_COMENTARIO } from '../../utils/estados.js'
 
 const TABS = [
   { key: 'PENDIENTE', label: 'Pendientes' },
   { key: 'APROBADO', label: 'Aprobados' },
   { key: 'RECHAZADO', label: 'Rechazados' },
 ]
-
-const PILL = {
-  PENDIENTE: 'bg-blue-50 text-blue-700',
-  APROBADO: 'bg-green-50 text-green-700',
-  RECHAZADO: 'bg-red-50 text-red-600',
-}
-
-const PILL_LABEL = { PENDIENTE: 'Pendiente', APROBADO: 'Aprobado', RECHAZADO: 'Rechazado' }
 
 function tiempoRelativo(fechaISO) {
   const ahora = new Date()
@@ -89,12 +83,7 @@ function ComentarioCard({ comentario, activeTab, onRefresh }) {
                 </p>
               </div>
             </div>
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium flex-shrink-0 ${PILL[comentario.estado]}`}>
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {PILL_LABEL[comentario.estado] || comentario.estado}
-            </span>
+            <EstadoPill estado={comentario.estado} mapa={ESTADOS_COMENTARIO} />
           </div>
 
           <p className="text-sm text-slate-700 leading-snug line-clamp-3">{textoMostrar}</p>

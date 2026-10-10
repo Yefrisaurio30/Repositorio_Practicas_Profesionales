@@ -4,20 +4,7 @@ import { getDashboard } from '../../services/reportesService.js'
 import { eliminarPublicacion } from '../../services/publicacionesService.js'
 import { useToast } from '../../context/ToastContext.jsx'
 import { getApiErrorMessage } from '../../utils/errores.js'
-
-const ESTADO_PILL = {
-  PUBLICADA: 'bg-green-50 text-green-700 border-green-200',
-  BORRADOR: 'bg-blue-50 text-blue-700 border-blue-200',
-  EN_REVISION: 'bg-blue-50 text-blue-700 border-blue-200',
-  ARCHIVADA: 'bg-red-50 text-red-600 border-red-200',
-}
-
-const ESTADO_LABEL = {
-  PUBLICADA: 'Publicado',
-  BORRADOR: 'Borrador',
-  EN_REVISION: 'En Revisión',
-  ARCHIVADA: 'Archivado',
-}
+import EstadoPill from '../../components/EstadoPill.jsx'
 
 function SkeletonKpi() {
   return <div className="bg-white rounded-xl border border-slate-200 p-5 h-36 skeleton" />
@@ -171,10 +158,7 @@ export default function Dashboard() {
                       {new Date(r.fecha).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${ESTADO_PILL[r.estado] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        {ESTADO_LABEL[r.estado] || r.estado}
-                      </span>
+                      <EstadoPill estado={r.estado} conBorde />
                     </td>
                     <td className="px-6 py-3.5">
                       <div className="flex justify-end gap-1">

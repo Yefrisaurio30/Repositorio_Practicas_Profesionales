@@ -7,13 +7,7 @@ import {
 } from '../../services/publicacionesService.js'
 import { useToast } from '../../context/ToastContext.jsx'
 import { getApiErrorMessage } from '../../utils/errores.js'
-
-const ESTADOS = {
-  BORRADOR: { label: 'Borrador', pill: 'bg-slate-100 text-slate-600' },
-  EN_REVISION: { label: 'En Revisión', pill: 'bg-blue-50 text-blue-700' },
-  PUBLICADA: { label: 'Publicado', pill: 'bg-green-50 text-green-700' },
-  ARCHIVADA: { label: 'Archivado', pill: 'bg-slate-100 text-slate-600' },
-}
+import EstadoPill from '../../components/EstadoPill.jsx'
 
 export default function MisProyectos() {
   const [propuestas, setPropuestas] = useState([])
@@ -87,10 +81,7 @@ export default function MisProyectos() {
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${ESTADOS[p.estado]?.pill || 'bg-slate-100 text-slate-600'}`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        {ESTADOS[p.estado]?.label || p.estado}
-                      </span>
+                      <EstadoPill estado={p.estado} />
                       {p.categoria_detail && (
                         <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700">
                           {p.categoria_detail.nombre}

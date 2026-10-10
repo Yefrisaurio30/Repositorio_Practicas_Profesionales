@@ -1,23 +1,17 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   getPublicacionAdmin,
   getPublicacionesAdmin,
-  getCategorias,
   actualizarPublicacion,
   eliminarPublicacion,
   cambiarEstado,
 } from '../../services/publicacionesService.js'
-import { getDashboard } from '../../services/reportesService.js'
 import { useToast } from '../../context/ToastContext.jsx'
 import { getApiErrorMessage } from '../../utils/errores.js'
-
-const ESTADOS = {
-  BORRADOR: { label: 'Borrador', pill: 'bg-slate-100 text-slate-600' },
-  EN_REVISION: { label: 'En Revisión', pill: 'bg-blue-50 text-blue-700' },
-  PUBLICADA: { label: 'Publicado', pill: 'bg-green-50 text-green-700' },
-  ARCHIVADA: { label: 'Archivado', pill: 'bg-slate-100 text-slate-600' },
-}
+import EstadoPill from '../../components/EstadoPill.jsx'
+import { ESTADOS_PUBLICACION as ESTADOS } from '../../utils/estados.js'
+import { usePublicaciones } from '../../hooks/usePublicaciones.js'
 
 function codigo(pub) {
   const year = pub.fechaCreacion ? new Date(pub.fechaCreacion).getFullYear() : new Date().getFullYear()
@@ -121,65 +115,19 @@ function Modal({ open, onClose, initial, categorias }) {
 }
 
 export default function Publicaciones() {
-  const [publicaciones, setPublicaciones] = useState([])
-  const [categorias, setCategorias] = useState([])
-  const [kpis, setKpis] = useState({ total: 0, publicadas: 0, en_revision: 0, borradores: 0 })
-  const [search, setSearch] = useState('')
-  const [searchDebounced, setSearchDebounced] = useState('')
-  const [estadoFiltro, setEstadoFiltro] = useState('')
-  const [categoriaFiltro, setCategoriaFiltro] = useState('')
-  const [programaFiltro, setProgramaFiltro] = useState('')
-  const [page, setPage] = useState(1)
-  const [count, setCount] = useState(0)
-  const [pageSize, setPageSize] = useState(12)
+  const {
+    publicaciones, categorias, kpis,
+    search, setSearch, searchDebounced,
+    estadoFiltro, setEstadoFiltro,
+    categoriaFiltro, setCategoriaFiltro, programaFiltro, setProgramaFiltro,
+    page, setPage, count, pageSize, loading, fetchData,
+  } = usePublicaciones()
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [loading, setLoading] = useState(true)
   const [exporting, setExporting] = useState(false)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { toast, confirmar } = useToast()
-
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setSearchDebounced(search)
-      setPage(1)
-    }, 350)
-    return () => clearTimeout(t)
-  }, [search])
-
-  useEffect(() => { setPage(1) }, [estadoFiltro, categoriaFiltro, programaFiltro])
-
-  const fetchData = useCallback(async () => {
-    setLoading(true)
-    try {
-      const params = { page }
-      if (searchDebounced) params.search = searchDebounced
-      if (estadoFiltro) params.estado = estadoFiltro
-      if (categoriaFiltro) params.categoria = categoriaFiltro
-      if (programaFiltro) params.programa = programaFiltro
-      const [pubRes, dashRes, catRes] = await Promise.all([
-        getPublicacionesAdmin(params),
-        getDashboard().catch(() => null),
-        categorias.length ? Promise.resolve(categorias) : getCategorias(),
-      ])
-      const results = pubRes.results || pubRes
-      setPublicaciones(results)
-      setCount(pubRes.count || results.length)
-      setPageSize(results.length || 12)
-      if (!categorias.length) setCategorias(catRes.results || catRes)
-      if (dashRes?.publicaciones) {
-        const p = dashRes.publicaciones
-        setKpis({ total: p.total || 0, publicadas: p.publicadas || 0, en_revision: p.en_revision || 0, borradores: p.borradores || 0 })
-      }
-    } catch {
-      // silent
-    } finally {
-      setLoading(false)
-    }
-  }, [page, searchDebounced, estadoFiltro, categoriaFiltro, programaFiltro]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => { fetchData() }, [fetchData])
 
   useEffect(() => {
     const editarId = searchParams.get('editar')
@@ -423,10 +371,7 @@ export default function Publicaciones() {
                         : new Date(p.fechaCreacion).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${ESTADOS[p.estado]?.pill || 'bg-slate-100 text-slate-600'}`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        {ESTADOS[p.estado]?.label || p.estado}
-                      </span>
+                      <EstadoPill estado={p.estado} />
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-[13px] text-slate-500">
                       <span className="inline-flex items-center gap-1 mr-3" title="Vistas">
