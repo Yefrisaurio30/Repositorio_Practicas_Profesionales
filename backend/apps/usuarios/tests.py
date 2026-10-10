@@ -121,6 +121,27 @@ class C2ProdAjustesTest(TestCase):
         self.assertNotIn('SECURE_BROWSER_XSS_FILTER', self._prod_source())
 
 
+class C3EnvDesarrolloTest(TestCase):
+    """local.py lee DEBUG, ALLOWED_HOSTS y CORS de variables de entorno (C3)."""
+
+    @staticmethod
+    def _local_source():
+        import pathlib
+        local = pathlib.Path(__file__).resolve().parent.parent.parent / 'config' / 'settings' / 'local.py'
+        return local.read_text(encoding='utf-8')
+
+    def test_debug_de_env(self):
+        self.assertIn("config('DEBUG'", self._local_source())
+
+    def test_allowed_hosts_de_env(self):
+        self.assertIn("config('ALLOWED_HOSTS'", self._local_source())
+
+    def test_cors_de_env(self):
+        fuente = self._local_source()
+        self.assertIn("'CORS_ALLOWED_ORIGINS'", fuente)
+        self.assertIn('Csv()', fuente)
+
+
 class C1SettingsReorgTest(TestCase):
     """base.py común; local/prod heredan de base; settings.py muerto eliminado."""
 
