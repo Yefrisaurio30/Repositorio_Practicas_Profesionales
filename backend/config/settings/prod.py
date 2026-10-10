@@ -16,7 +16,9 @@ SECRET_KEY = os.environ['SECRET_KEY']
 if SECRET_KEY.startswith('django-insecure') or len(SECRET_KEY) < 40:
     raise ImproperlyConfigured('SECRET_KEY de producción inválida')
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = [
+    h.strip() for h in os.environ.get('ALLOWED_HOSTS', '').split(',') if h.strip()
+]
 
 # ------------------------------------------------------------------
 # CORS - Politicas estrictas
@@ -49,13 +51,15 @@ CORS_ALLOW_HEADERS = [
 # ------------------------------------------------------------------
 # Seguridad HTTPS (Render / Railway)
 # ------------------------------------------------------------------
+# El TLS termina en el proxy (Render/Railway/nginx): sin esto, Django cree
+# que todo llega por HTTP y SECURE_SSL_REDIRECT entra en bucle (C2).
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() == 'true'
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
@@ -75,7 +79,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STORAGES reemplaza a STATICFILES_STORAGE (obsoleto desde Django 4.2).
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # noqa: F405
 
 # ------------------------------------------------------------------

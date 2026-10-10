@@ -100,6 +100,27 @@ class S1GestionUsuariosTest(TestCase):
         self.assertTrue(User.objects.filter(pk=otro_admin.pk).exists())
 
 
+class C2ProdAjustesTest(TestCase):
+    """prod.py detrás de proxy: cabecera, hosts y STORAGES (C2)."""
+
+    @staticmethod
+    def _prod_source():
+        import pathlib
+        prod = pathlib.Path(__file__).resolve().parent.parent.parent / 'config' / 'settings' / 'prod.py'
+        return prod.read_text(encoding='utf-8')
+
+    def test_proxy_ssl_header(self):
+        self.assertIn('SECURE_PROXY_SSL_HEADER', self._prod_source())
+
+    def test_storages_modernos(self):
+        fuente = self._prod_source()
+        self.assertIn('STORAGES', fuente)
+        self.assertNotIn('STATICFILES_STORAGE =', fuente)
+
+    def test_sin_xss_filter_obsoleto(self):
+        self.assertNotIn('SECURE_BROWSER_XSS_FILTER', self._prod_source())
+
+
 class C1SettingsReorgTest(TestCase):
     """base.py común; local/prod heredan de base; settings.py muerto eliminado."""
 
