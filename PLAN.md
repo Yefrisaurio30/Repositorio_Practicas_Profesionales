@@ -16,6 +16,20 @@ altera el contrato del preview de staff → decisión en Fase 2/3.
 Migraciones: sin cambios. `npm run build`: OK. ruff/eslint: sin gate en repo
 (llega en F6, Fase 4); solo avisos preexistentes + 1 pulido propio (SIM117).
 
+## Estado Fase 2 — HECHA (2026-10-09)
+
+C1 (base/local/prod + elimina settings.py), S7 (throttles anon/user/login 5/min
+en login; CAPTCHA/honeypot queda pendiente de decisión), L1 (editar publicada
+→ EN_REVISION; elegido por defecto ante falta de respuesta), L2 (es_staff y
+ROLES_STAFF únicos en `apps/usuarios/permissions.py`; frontend sin cambios:
+ya prefiere is_staff), L3 (middleware contextvars sin dependencias nuevas;
+tests usan `client.login` porque `force_authenticate` salta el middleware),
+C2 (proxy header, ALLOWED_HOSTS con strip, STORAGES; ALLOWED_HOSTS tolerante
+con `get` en vez del `os.environ[]` estricto del informe), R1 (`git rm
+--cached`: 0 node_modules/pyc/media en índice), T1 (CI con Postgres +
+`manage.py test` y build frontend; pasos ruff/eslint llegan en F6).
+Suite: 96 tests, solo el fallo preexistente de Fase 1. `npm run build`: OK.
+
 Estados: `confirmado` = verificado contra código real.
 `ya resuelto` / `no aplica` = ninguno (35 confirmados plenos, 1 confirmado con matiz).
 
