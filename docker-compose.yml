@@ -15,8 +15,9 @@ services:
   db:
     image: postgres:15-alpine
     container_name: practicas_db
+    # Solo localhost: en redes compartidas cualquiera podría conectarse (C5).
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}

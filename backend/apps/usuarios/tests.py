@@ -100,6 +100,16 @@ class S1GestionUsuariosTest(TestCase):
         self.assertTrue(User.objects.filter(pk=otro_admin.pk).exists())
 
 
+class C5DbLocalhostTest(TestCase):
+    """Postgres de desarrollo solo escucha en localhost (C5)."""
+
+    def test_puerto_solo_localhost(self):
+        import pathlib
+        compose = (pathlib.Path(__file__).resolve().parent.parent.parent.parent / 'docker-compose.yml').read_text(
+            encoding='utf-8')
+        self.assertIn('127.0.0.1:${DB_PORT:-5432}:5432', compose)
+
+
 class C2ProdAjustesTest(TestCase):
     """prod.py detrás de proxy: cabecera, hosts y STORAGES (C2)."""
 
