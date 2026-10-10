@@ -1015,3 +1015,47 @@ class L1EditarPublicadaTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.pub.refresh_from_db()
         self.assertEqual(self.pub.estado, Publicacion.Estado.PUBLICADA)
+
+
+# ======================================================================
+# L4 (Fase 3): máquina de estados validada
+# ======================================================================
+
+
+class L4TransicionesTest(TestCase):
+    """Archivar un borrador falla; ARCHIVADA no vuelve a revisión directo."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.staff = crear_staff()
+        self.borrador = crear_publicacion(
+            estado=Publicacion.Estado.BORRADOR, usuario=self.staff,
+            titulo='Borrador L4')
+        self.archivada = crear_publicacion(
+            estado=Publicacion.Estado.ARCHIVADA, usuario=self.staff,
+            titulo='Archivada L4')
+        self.client.force_authenticate(user=self.staff)
+
+    def test_archivar_borrador_falla(self):
+        resp = self.client.post(
+            f'/api/publicaciones/publicaciones/{self.borrador.pk}/archivar/')
+        self.assertEqual(resp.status_code, 400)
+        self.borrador.refresh_from_db()
+        self.assertEqual(self.borrador.estado, Publicacion.Estado.BORRADOR)
+
+    def test_archivada_no_vuelve_a_revision(self):
+        resp = self.client.post(
+            f'/api/publicaciones/publicaciones/{self.archivada.pk}/enviar-revision/')
+        self.assertEqual(resp.status_code, 400)
+        self.archivada.refresh_from_db()
+        self.assertEqual(self.archivada.estado, Publicacion.Estado.ARCHIVADA)
+
+    def test_archivar_publicada_ok(self):
+        pub = crear_publicacion(
+            estado=Publicacion.Estado.PUBLICADA, usuario=self.staff,
+            titulo='Pub L4')
+        resp = self.client.post(
+            f'/api/publicaciones/publicaciones/{pub.pk}/archivar/')
+        self.assertEqual(resp.status_code, 200)
+        pub.refresh_from_db()
+        self.assertEqual(pub.estado, Publicacion.Estado.ARCHIVADA)

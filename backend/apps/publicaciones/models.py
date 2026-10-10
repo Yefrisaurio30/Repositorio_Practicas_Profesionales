@@ -65,6 +65,14 @@ class Publicacion(models.Model):
     def __str__(self):
         return self.titulo
 
+    # Transiciones permitidas (L4). Un único mapa en el modelo.
+    TRANSICIONES = {
+        Estado.BORRADOR: {Estado.EN_REVISION, Estado.PUBLICADA},
+        Estado.EN_REVISION: {Estado.BORRADOR, Estado.PUBLICADA},
+        Estado.PUBLICADA: {Estado.BORRADOR, Estado.ARCHIVADA},
+        Estado.ARCHIVADA: {Estado.PUBLICADA},
+    }
+
     def save(self, *args, **kwargs):
         if self.pk:
             try:
@@ -75,6 +83,22 @@ class Publicacion(models.Model):
         else:
             self._estado_anterior = None
         super().save(*args, **kwargs)
+
+    def cambiar_estado(self, nuevo):
+        """Cambia de estado validando el mapa; lanza ValueError si no procede."""
+        permitidos = self.TRANSICIONES.get(self.estado, set())
+        if nuevo not in permitidos:
+            raise ValueError(
+                f'Transición no permitida de {self.estado} a {nuevo}.'
+            )
+        self.estado = nuevo
+        if nuevo == self.Estado.PUBLICADA:
+            from django.utils import timezone
+            self.fechaPublicacion = timezone.now()
+            self.save(update_fields=['estado', 'fechaPublicacion'])
+        else:
+            self.save(update_fields=['estado'])
+        return self
 
     def publicar(self):
         from django.utils import timezone

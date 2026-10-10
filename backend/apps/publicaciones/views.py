@@ -120,8 +120,13 @@ class PublicacionViewSet(viewsets.ModelViewSet):
         if not es_staff(request.user):
             raise PermissionDenied('Solo el administrador puede archivar.')
         publicacion = self.get_object()
-        publicacion.estado = Publicacion.Estado.ARCHIVADA
-        publicacion.save(update_fields=['estado'])
+        try:
+            publicacion.cambiar_estado(Publicacion.Estado.ARCHIVADA)
+        except ValueError as e:
+            return Response(
+                {'detail': str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return Response(
             {'detail': 'Publicacion archivada.', 'estado': publicacion.estado},
             status=status.HTTP_200_OK,
@@ -143,8 +148,13 @@ class PublicacionViewSet(viewsets.ModelViewSet):
                 {'detail': 'La publicacion ya esta publicada.'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        publicacion.estado = Publicacion.Estado.EN_REVISION
-        publicacion.save(update_fields=['estado'])
+        try:
+            publicacion.cambiar_estado(Publicacion.Estado.EN_REVISION)
+        except ValueError as e:
+            return Response(
+                {'detail': str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return Response(
             {'detail': 'Publicacion enviada a revisión.', 'estado': publicacion.estado},
             status=status.HTTP_200_OK,
