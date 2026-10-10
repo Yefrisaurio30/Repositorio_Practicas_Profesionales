@@ -1,5 +1,4 @@
-# CI Fase 2 (T1): pruebas backend + build frontend en cada pull request.
-# Los pasos de lint (ruff, eslint) se añaden en Fase 4 (F6).
+# CI (T1, F6): pruebas backend, lints y build frontend en cada pull request.
 name: CI
 
 on:
@@ -28,7 +27,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Instala dependencias
-        run: pip install -r backend/requirements.txt
+        run: pip install -r backend/requirements.txt ruff
+      - name: Ruff
+        run: ruff check backend
       - name: Pruebas
         env:
           DJANGO_SETTINGS_ENV: local
@@ -51,6 +52,12 @@ jobs:
       - name: Instala dependencias
         working-directory: frontend
         run: npm ci
+      - name: ESLint
+        working-directory: frontend
+        run: npm run lint
+      - name: Vitest
+        working-directory: frontend
+        run: npm test
       - name: Build
         working-directory: frontend
         run: npm run build

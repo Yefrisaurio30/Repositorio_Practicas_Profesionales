@@ -15,12 +15,10 @@ from .serializers import (
     UsuarioAdminSerializer,
     RolSerializer,
 )
-
-User = get_user_model()
-
-
 from .permissions import IsStaffOrHasRole as IsStaffOnly
 from .permissions import SoloSuperadmin, es_superadmin
+
+User = get_user_model()
 
 
 class IsAdminUser(IsStaffOnly):

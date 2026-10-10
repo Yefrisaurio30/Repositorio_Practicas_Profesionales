@@ -6,7 +6,6 @@ from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_MET
 from rest_framework.exceptions import PermissionDenied
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Prefetch, Q
-from django.utils import timezone
 from apps.imagenes.models import Imagen
 from .models import Publicacion, Categoria
 from .serializers import (

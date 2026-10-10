@@ -193,7 +193,7 @@ export default function DetallePublicacion() {
     }
     fetchData()
     return () => { cancelled = true }
-  }, [id])
+  }, [id, user])
 
   if (loading) {
     return (

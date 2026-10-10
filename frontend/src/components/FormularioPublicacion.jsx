@@ -106,9 +106,13 @@ export default function FormularioPublicacion({
   const formRef = useRef(form)
   const tagsRef = useRef(tags)
   const estadoRef = useRef(estadoActual)
-  formRef.current = form
-  tagsRef.current = tags
-  estadoRef.current = estadoActual
+  // Refs con el último valor para los guardados asíncronos (F6: sin
+  // escritura durante el render).
+  useEffect(() => {
+    formRef.current = form
+    tagsRef.current = tags
+    estadoRef.current = estadoActual
+  })
 
   useEffect(() => {
     getCategorias()

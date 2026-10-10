@@ -32,7 +32,7 @@ export default function Imagenes() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [toast])
 
   useEffect(() => {
     fetchData()
