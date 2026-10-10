@@ -193,6 +193,15 @@ class L2StaffUnificadoTest(TestCase):
         self.assertIs(senales.ROLES_STAFF, central.ROLES_STAFF)
 
 
+class P3IndicesTest(TestCase):
+    """Publicacion tiene índice en (estado, -fechaPublicacion) (P3)."""
+
+    def test_indice_estado_fecha(self):
+        from apps.publicaciones.models import Publicacion
+        campos = [list(idx.fields) for idx in Publicacion._meta.indexes]
+        self.assertIn(['estado', '-fechaPublicacion'], campos)
+
+
 class P2PaginacionTest(TestCase):
     """Listados grandes devuelven página (count+results), no todo (P2)."""
 

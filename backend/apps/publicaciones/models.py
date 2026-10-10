@@ -61,6 +61,12 @@ class Publicacion(models.Model):
     class Meta:
         verbose_name_plural = 'Publicaciones'
         ordering = ['-fechaPublicacion', '-fechaCreacion']
+        # Los listados siempre filtran por estado y ordenan por fecha (P3).
+        # Nota: la búsqueda full-text (SearchVector "spanish"/pg_trgm) queda
+        # como mejora posterior: exige Postgres y no corre en sqlite.
+        indexes = [
+            models.Index(fields=['estado', '-fechaPublicacion']),
+        ]
 
     def __str__(self):
         return self.titulo
