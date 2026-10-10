@@ -56,5 +56,8 @@ Thumbs.db
 # El .env de la raiz es el que usa Compose; se ignora aqui a proposito (ya
 # cubierto por la regla .env de arriba).
 
+# --- Respaldos de volúmenes Docker (R2): fuera del repo, sin borrarlos ---
+*.tar.gz
+
 # --- Scripts locales ---
 iniciar.ps1
