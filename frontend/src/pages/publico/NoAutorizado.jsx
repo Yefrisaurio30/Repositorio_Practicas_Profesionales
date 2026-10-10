@@ -1,16 +1,19 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { logout } from '../../services/authService.js'
+import { useAuth } from '../../context/AuthContext.jsx'
+import { useToast } from '../../context/ToastContext.jsx'
 
 export default function NoAutorizado() {
   const navigate = useNavigate()
+  const { logout } = useAuth()
+  const { toast } = useToast()
 
   const handleLogout = async () => {
     const res = await logout()
     if (res.ok) {
       navigate('/login', { replace: true })
     } else {
-      alert('No se pudo cerrar sesión: ' + res.error)
+      toast('No se pudo cerrar sesión: ' + res.error, 'error')
     }
   }
 

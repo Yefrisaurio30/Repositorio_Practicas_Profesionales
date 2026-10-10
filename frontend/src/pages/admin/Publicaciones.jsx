@@ -9,6 +9,8 @@ import {
   cambiarEstado,
 } from '../../services/publicacionesService.js'
 import { getDashboard } from '../../services/reportesService.js'
+import { useToast } from '../../context/ToastContext.jsx'
+import { getApiErrorMessage } from '../../utils/errores.js'
 
 const ESTADOS = {
   BORRADOR: { label: 'Borrador', pill: 'bg-slate-100 text-slate-600' },
@@ -29,6 +31,7 @@ function formatearNumero(n) {
 
 function Modal({ open, onClose, initial, categorias }) {
   const [form, setForm] = useState({})
+  const { toast } = useToast()
 
   useEffect(() => {
     if (open) {
@@ -56,7 +59,7 @@ function Modal({ open, onClose, initial, categorias }) {
       await actualizarPublicacion(initial.id, form)
       onClose(true)
     } catch (err) {
-      alert('Error al guardar la publicación: ' + (err.response?.data?.message || err.message))
+      toast(getApiErrorMessage(err, 'Error al guardar la publicación.'), 'error')
     }
   }
 
@@ -135,6 +138,7 @@ export default function Publicaciones() {
   const [exporting, setExporting] = useState(false)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
+  const { toast, confirmar } = useToast()
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -194,17 +198,17 @@ export default function Publicaciones() {
       await cambiarEstado(pub.id, nuevoEstado)
       fetchData()
     } catch (err) {
-      alert('Error al cambiar el estado: ' + (err.response?.data?.detail || err.message))
+      toast(getApiErrorMessage(err, 'Error al cambiar el estado.'), 'error')
     }
   }
 
   const handleEliminar = async (pub) => {
-    if (!confirm(`¿Desea eliminar la publicación "${pub.titulo}"?`)) return
+    if (!(await confirmar(`¿Desea eliminar la publicación "${pub.titulo}"?`))) return
     try {
       await eliminarPublicacion(pub.id)
       fetchData()
     } catch (err) {
-      alert('Error al eliminar: ' + err.message)
+      toast(getApiErrorMessage(err, 'Error al eliminar.'), 'error')
     }
   }
 
@@ -239,7 +243,7 @@ export default function Publicaciones() {
       a.click()
       URL.revokeObjectURL(url)
     } catch {
-      alert('Error al exportar.')
+      toast('Error al exportar.', 'error')
     } finally {
       setExporting(false)
     }

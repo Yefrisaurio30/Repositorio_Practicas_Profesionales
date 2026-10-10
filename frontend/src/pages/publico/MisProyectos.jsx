@@ -5,6 +5,8 @@ import {
   eliminarPublicacion,
   enviarRevision,
 } from '../../services/publicacionesService.js'
+import { useToast } from '../../context/ToastContext.jsx'
+import { getApiErrorMessage } from '../../utils/errores.js'
 
 const ESTADOS = {
   BORRADOR: { label: 'Borrador', pill: 'bg-slate-100 text-slate-600' },
@@ -16,6 +18,7 @@ const ESTADOS = {
 export default function MisProyectos() {
   const [propuestas, setPropuestas] = useState([])
   const [loading, setLoading] = useState(true)
+  const { toast, confirmar } = useToast()
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -32,12 +35,12 @@ export default function MisProyectos() {
   useEffect(() => { fetchData() }, [fetchData])
 
   const handleEliminar = async (p) => {
-    if (!confirm(`¿Desea eliminar su propuesta "${p.titulo}"?`)) return
+    if (!(await confirmar(`¿Desea eliminar su propuesta "${p.titulo}"?`))) return
     try {
       await eliminarPublicacion(p.id)
       fetchData()
     } catch {
-      alert('Error al eliminar.')
+      toast('Error al eliminar.', 'error')
     }
   }
 
@@ -46,7 +49,7 @@ export default function MisProyectos() {
       await enviarRevision(p.id)
       fetchData()
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error al enviar a revisión.')
+      toast(getApiErrorMessage(err, 'Error al enviar a revisión.'), 'error')
     }
   }
 

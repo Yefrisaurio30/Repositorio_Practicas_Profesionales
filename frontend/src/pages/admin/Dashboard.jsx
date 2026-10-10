@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getDashboard } from '../../services/reportesService.js'
 import { eliminarPublicacion } from '../../services/publicacionesService.js'
+import { useToast } from '../../context/ToastContext.jsx'
+import { getApiErrorMessage } from '../../utils/errores.js'
 
 const ESTADO_PILL = {
   PUBLICADA: 'bg-green-50 text-green-700 border-green-200',
@@ -26,6 +28,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const { toast, confirmar } = useToast()
 
   useEffect(() => {
     getDashboard()
@@ -35,13 +38,13 @@ export default function Dashboard() {
   }, [])
 
   const handleEliminar = async (pub) => {
-    if (!confirm(`¿Desea eliminar la publicación "${pub.titulo}"?`)) return
+    if (!(await confirmar(`¿Desea eliminar la publicación "${pub.titulo}"?`))) return
     try {
       await eliminarPublicacion(pub.id)
       const fresh = await getDashboard()
       setData(fresh)
-    } catch {
-      alert('Error al eliminar la publicación.')
+    } catch (err) {
+      toast(getApiErrorMessage(err, 'Error al eliminar la publicación.'), 'error')
     }
   }
 

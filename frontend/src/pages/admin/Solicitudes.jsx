@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { getSolicitudes, cambiarEstadoSolicitud, eliminarSolicitud } from '../../services/solicitudesService.js'
+import { useToast } from '../../context/ToastContext.jsx'
+import { getApiErrorMessage } from '../../utils/errores.js'
 
 const ESTADOS = {
   RECIBIDA: { label: 'Recibida', color: 'bg-uniminuto-100 text-uniminuto-700' },
@@ -23,6 +25,7 @@ export default function Solicitudes() {
   const [filtroEstado, setFiltroEstado] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const { toast, confirmar } = useToast()
 
   useEffect(() => {
     const t = setTimeout(() => setSearchDebounced(search), 300)
@@ -52,17 +55,17 @@ export default function Solicitudes() {
       await cambiarEstadoSolicitud(s.id, estado)
       fetchData()
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error al cambiar el estado.')
+      toast(getApiErrorMessage(err, 'Error al cambiar el estado.'), 'error')
     }
   }
 
   const handleEliminar = async (s) => {
-    if (!confirm(`Desea eliminar la solicitud "${s.asunto}"?`)) return
+    if (!(await confirmar(`¿Desea eliminar la solicitud "${s.asunto}"?`))) return
     try {
       await eliminarSolicitud(s.id)
       fetchData()
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error al eliminar la solicitud.')
+      toast(getApiErrorMessage(err, 'Error al eliminar la solicitud.'), 'error')
     }
   }
 

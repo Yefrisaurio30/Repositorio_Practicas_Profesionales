@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx'
+import { ToastProvider } from './context/ToastContext.jsx'
 import PublicRouter from './routes/AppRouter.jsx'
 import RutaProtegida from './routes/RutaProtegida.jsx'
 import AdminLayout from './components/layout/AdminLayout.jsx'
@@ -41,15 +42,17 @@ function AdminRouter() {
 export default function App() {
   return (
     <Router>
-      <AuthProvider>
-        <Routes>
-          <Route path="/admin/*" element={<AdminRouter />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<Registro />} />
-          <Route path="/unauthorized" element={<NoAutorizado />} />
-          <Route path="*" element={<PublicRouter />} />
-        </Routes>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <Routes>
+            <Route path="/admin/*" element={<AdminRouter />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Registro />} />
+            <Route path="/unauthorized" element={<NoAutorizado />} />
+            <Route path="*" element={<PublicRouter />} />
+          </Routes>
+        </AuthProvider>
+      </ToastProvider>
     </Router>
   )
 }

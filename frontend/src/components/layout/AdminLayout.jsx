@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom'
-import { logout, getUsuarioActual } from '../../services/authService.js'
-import { isStaff as isStaffUser } from '../../utils/roles.js'
+import { useAuth } from '../../context/AuthContext.jsx'
+import { useToast } from '../../context/ToastContext.jsx'
 
 const NAV_ITEMS = [
   { to: '/admin/dashboard', label: 'Tablero', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
@@ -36,22 +36,17 @@ function iniciales(nombre) {
 
 export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [user, setUser] = useState(null)
   const navigate = useNavigate()
   const location = useLocation()
-
-  useEffect(() => {
-    let cancelled = false
-    getUsuarioActual().then((u) => { if (!cancelled) setUser(u) })
-    return () => { cancelled = true }
-  }, [])
+  const { user, logout } = useAuth()
+  const { toast } = useToast()
 
   const handleLogout = async () => {
     const res = await logout()
     if (res.ok) {
       navigate('/login', { replace: true })
     } else {
-      alert('No se pudo cerrar sesión: ' + res.error)
+      toast('No se pudo cerrar sesión: ' + res.error, 'error')
     }
   }
 

@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { getUsuarios, actualizarUsuario, eliminarUsuario } from '../../services/usuariosService.js'
 import { register } from '../../services/authService.js'
+import { useToast } from '../../context/ToastContext.jsx'
+import { getApiErrorMessage } from '../../utils/errores.js'
 
 const PAGE_SIZE = 8
 
@@ -137,10 +139,10 @@ export default function Usuarios() {
 
   useEffect(() => { fetchData() }, [fetchData])
 
+  const { toast, confirmar } = useToast()
+
   const mostrarError = (err, porDefecto) => {
-    const d = err.response?.data
-    const msg = d?.detail || (typeof d === 'object' ? Object.values(d).flat().join(' ') : d) || porDefecto
-    alert(msg)
+    toast(getApiErrorMessage(err, porDefecto), 'error')
   }
 
   const toggleActivo = async (u) => {
@@ -162,7 +164,7 @@ export default function Usuarios() {
   }
 
   const handleEliminar = async (u) => {
-    if (!confirm(`¿Desea eliminar al usuario "${u.username}"?`)) return
+    if (!(await confirmar(`¿Desea eliminar al usuario "${u.username}"?`))) return
     try {
       await eliminarUsuario(u.id)
       fetchData()

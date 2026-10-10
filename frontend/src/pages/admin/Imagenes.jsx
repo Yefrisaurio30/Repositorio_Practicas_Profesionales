@@ -4,6 +4,8 @@ import {
   getImagenes,
   getPublicacionesAdmin,
 } from '../../services/publicacionesService.js'
+import { useToast } from '../../context/ToastContext.jsx'
+import { getApiErrorMessage } from '../../utils/errores.js'
 
 export default function Imagenes() {
   const [imagenes, setImagenes] = useState([])
@@ -14,6 +16,7 @@ export default function Imagenes() {
   const [descripcion, setDescripcion] = useState('')
   const [uploading, setUploading] = useState(false)
   const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -25,7 +28,7 @@ export default function Imagenes() {
       setImagenes(imgRes.results || imgRes)
       setPublicaciones(pubRes.results || pubRes)
     } catch (err) {
-      alert('Error al cargar imagenes: ' + err.message)
+      toast(getApiErrorMessage(err, 'Error al cargar imágenes.'), 'error')
     } finally {
       setLoading(false)
     }
@@ -44,7 +47,7 @@ export default function Imagenes() {
 
   const handleUpload = async () => {
     if (!selectedFile || !publicacionId) {
-      alert('Seleccione una imagen y una publicacion.')
+      toast('Seleccione una imagen y una publicación.', 'error')
       return
     }
     setUploading(true)
@@ -60,7 +63,7 @@ export default function Imagenes() {
       setDescripcion('')
       fetchData()
     } catch (err) {
-      alert('Error al subir la imagen: ' + (err.response?.data?.detail || err.message))
+      toast(getApiErrorMessage(err, 'Error al subir la imagen.'), 'error')
     } finally {
       setUploading(false)
     }

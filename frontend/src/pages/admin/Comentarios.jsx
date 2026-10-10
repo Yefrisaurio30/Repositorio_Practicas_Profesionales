@@ -4,6 +4,8 @@ import {
   aprobarComentario,
   rechazarComentario,
 } from '../../services/comentariosService.js'
+import { useToast } from '../../context/ToastContext.jsx'
+import { getApiErrorMessage } from '../../utils/errores.js'
 
 const TABS = [
   { key: 'PENDIENTE', label: 'Pendientes' },
@@ -37,6 +39,7 @@ function ComentarioCard({ comentario, activeTab, onRefresh }) {
   const [rejecting, setRejecting] = useState(false)
   const [motivo, setMotivo] = useState('')
   const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
   const [expandido, setExpandido] = useState(false)
   const LIMITE = 160
   const esLargo = comentario.contenido.length > LIMITE
@@ -48,7 +51,7 @@ function ComentarioCard({ comentario, activeTab, onRefresh }) {
       await aprobarComentario(comentario.id)
       onRefresh()
     } catch (err) {
-      alert('Error: ' + (err.response?.data?.detail || err.message))
+      toast(getApiErrorMessage(err, 'Error al aprobar.'), 'error')
     } finally {
       setLoading(false)
     }
@@ -62,7 +65,7 @@ function ComentarioCard({ comentario, activeTab, onRefresh }) {
       setMotivo('')
       onRefresh()
     } catch (err) {
-      alert('Error: ' + (err.response?.data?.detail || err.message))
+      toast(getApiErrorMessage(err, 'Error al rechazar.'), 'error')
     } finally {
       setLoading(false)
     }
