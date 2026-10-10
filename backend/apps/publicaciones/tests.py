@@ -1046,6 +1046,37 @@ class P1SinNPlusOneTest(TestCase):
 
 
 # ======================================================================
+# P4 (Fase 4): vistas por sesión y save() sin SELECT extra
+# ======================================================================
+
+
+class P4VistasYSavesTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.pub = crear_publicacion(estado=Publicacion.Estado.PUBLICADA)
+
+    def test_dos_recargas_una_vista(self):
+        url = f'/api/publicaciones/publicas/{self.pub.pk}/'
+        self.client.get(url)
+        self.client.get(url)
+        self.pub.refresh_from_db()
+        self.assertEqual(self.pub.vistas, 1)
+
+    def test_save_sin_select_extra(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+        pub = Publicacion.objects.get(pk=self.pub.pk)
+        with CaptureQueriesContext(connection) as ctx:
+            pub.cambiar_estado(Publicacion.Estado.BORRADOR)
+        selects_propios = [
+            q for q in ctx.captured_queries
+            if q['sql'].startswith('SELECT')
+            and '"publicaciones_publicacion"' in q['sql']
+        ]
+        self.assertEqual(selects_propios, [])
+
+
+# ======================================================================
 # L4 (Fase 3): máquina de estados validada
 # ======================================================================
 

@@ -79,16 +79,31 @@ class Publicacion(models.Model):
         Estado.ARCHIVADA: {Estado.PUBLICADA},
     }
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        # Guarda el estado original para no reconsultarlo en save() (P4).
+        instance = super().from_db(db, field_names, values)
+        try:
+            instance._estado_original = values[field_names.index('estado')]
+        except ValueError:
+            instance._estado_original = None
+        return instance
+
     def save(self, *args, **kwargs):
         if self.pk:
-            try:
-                old = Publicacion.objects.get(pk=self.pk)
-                self._estado_anterior = old.estado
-            except Publicacion.DoesNotExist:
-                self._estado_anterior = None
+            original = getattr(self, '_estado_original', None)
+            if original is not None:
+                self._estado_anterior = original
+            else:
+                try:
+                    old = Publicacion.objects.get(pk=self.pk)
+                    self._estado_anterior = old.estado
+                except Publicacion.DoesNotExist:
+                    self._estado_anterior = None
         else:
             self._estado_anterior = None
         super().save(*args, **kwargs)
+        self._estado_original = self.estado
 
     def cambiar_estado(self, nuevo):
         """Cambia de estado validando el mapa; lanza ValueError si no procede."""

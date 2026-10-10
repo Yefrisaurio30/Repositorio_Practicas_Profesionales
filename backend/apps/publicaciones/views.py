@@ -208,10 +208,17 @@ class PublicacionPublicViewSet(viewsets.ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         from django.db.models import F
+        from django.utils import timezone
         instance = self.get_object()
-        # Solo contar vista si es publica; no inflar en preview staff
+        # Solo contar vista si es publica; no inflar en preview staff.
+        # Una vista por sesión y ventana de 1 hora (P4).
         if instance.estado in [Publicacion.Estado.PUBLICADA, Publicacion.Estado.ARCHIVADA]:
-            Publicacion.objects.filter(pk=instance.pk).update(vistas=F('vistas') + 1)
-            instance.refresh_from_db(fields=['vistas'])
+            clave = f'vista_pub_{instance.pk}'
+            ultima = (request.session.get(clave) or 0)
+            ahora = timezone.now().timestamp()
+            if ahora - float(ultima) > 3600:
+                Publicacion.objects.filter(pk=instance.pk).update(vistas=F('vistas') + 1)
+                instance.refresh_from_db(fields=['vistas'])
+                request.session[clave] = ahora
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
