@@ -18,12 +18,22 @@ def generate_filename(original_name, publicacion_id):
     return f'publicacion_{publicacion_id}/{base}_{uuid.uuid4().hex[:8]}{ext}'
 
 
+class StorageError(Exception):
+    """Fallo del almacenamiento externo con mensaje claro para la API (T2)."""
+
+
 def guardar_imagen(archivo, filename):
     """Guarda el archivo y retorna la URL publica (ruta del modelo)."""
     if getattr(settings, 'IMAGE_STORAGE', 'local') == 'supabase':
         from .supabase import upload_image
-        archivo.seek(0)
-        return upload_image(archivo, filename)
+        try:
+            archivo.seek(0)
+            return upload_image(archivo, filename)
+        except Exception as e:
+            raise StorageError(
+                'No se pudo guardar en el almacenamiento externo. '
+                'Intente de nuevo más tarde.'
+            ) from e
     return _guardar_local(archivo, filename)
 
 

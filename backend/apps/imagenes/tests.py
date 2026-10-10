@@ -133,6 +133,41 @@ class S4TipoArchivoTest(TestCase):
         self.assertEqual(resp.status_code, 201)
 
 
+class T2ErroresAlmacenamientoTest(TestCase):
+    """Fallo de Supabase devuelve mensaje claro, no 500 (T2)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self._override = override_settings(MEDIA_ROOT=self._tmp.name)
+        self._override.enable()
+        self.addCleanup(self._override.disable)
+        self.addCleanup(self._tmp.cleanup)
+        self.client = APIClient()
+        self.staff = User.objects.create_user(
+            username=_siguiente('staff'), password='Stf12345!',
+            is_staff=True, is_superuser=True,
+        )
+        self.pub = crear_publicacion(self.staff)
+        self.client.force_authenticate(user=self.staff)
+
+    def test_fallo_supabase_es_502_con_mensaje(self):
+        from unittest import mock
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        with override_settings(IMAGE_STORAGE='supabase'):
+            with mock.patch(
+                'apps.imagenes.utils.supabase.upload_image',
+                side_effect=Exception('bucket caído'),
+            ):
+                archivo = SimpleUploadedFile(
+                    'falla.png', png_valido(), content_type='image/png')
+                resp = self.client.post('/api/imagenes/imagenes/', {
+                    'archivo': archivo, 'publicacion': self.pub.pk,
+                    'nombre': 'Falla',
+                }, format='multipart')
+        self.assertEqual(resp.status_code, 502)
+        self.assertIn('almacenamiento', resp.data['detail'].lower())
+
+
 class L7AlmacenamientoTest(TestCase):
     """Borrado en Supabase, ruta local válida y limpieza en cascada (L7)."""
 

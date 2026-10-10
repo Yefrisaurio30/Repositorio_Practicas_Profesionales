@@ -58,9 +58,16 @@ class ImagenViewSet(viewsets.ModelViewSet):
         instance.delete()
 
     def create(self, request, *args, **kwargs):
+        from .utils.storage import StorageError
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        try:
+            self.perform_create(serializer)
+        except StorageError as e:
+            return Response(
+                {'detail': str(e)},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
         imagen = serializer.instance
         return Response(
             ImagenSerializer(imagen).data,

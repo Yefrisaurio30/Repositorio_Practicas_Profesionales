@@ -193,6 +193,15 @@ class L2StaffUnificadoTest(TestCase):
         self.assertIs(senales.ROLES_STAFF, central.ROLES_STAFF)
 
 
+class T2LoggingDevTest(TestCase):
+    """La configuración base define LOGGING con salida a consola (T2)."""
+
+    def test_logging_con_consola(self):
+        from django.conf import settings
+        self.assertIn('console', settings.LOGGING['handlers'])
+        self.assertIn('console', settings.LOGGING['root']['handlers'])
+
+
 class P3IndicesTest(TestCase):
     """Publicacion tiene índice en (estado, -fechaPublicacion) (P3)."""
 
