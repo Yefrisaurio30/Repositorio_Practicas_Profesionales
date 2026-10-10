@@ -5,7 +5,9 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.exceptions import PermissionDenied
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Count, Prefetch, Q
 from django.utils import timezone
+from apps.imagenes.models import Imagen
 from .models import Publicacion, Categoria
 from .serializers import (
     PublicacionSerializer,
@@ -31,6 +33,24 @@ class CategoriaViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
 
+def queryset_con_metricas():
+    """Conteos anotados + portada con prefetch: evita N+1 en listados (P1)."""
+    return (
+        Publicacion.objects.select_related('categoria', 'usuario')
+        .annotate(
+            imagenes_count=Count('imagenes', distinct=True),
+            comentarios_count=Count(
+                'comentarios',
+                filter=Q(comentarios__estado='APROBADO'),
+                distinct=True,
+            ),
+        )
+        .prefetch_related(
+            Prefetch('imagenes', queryset=Imagen.objects.order_by('fechaCarga'))
+        )
+    )
+
+
 class PublicacionViewSet(viewsets.ModelViewSet):
     """
     Gestion de publicaciones.
@@ -47,7 +67,7 @@ class PublicacionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        qs = Publicacion.objects.select_related('categoria', 'usuario').all()
+        qs = queryset_con_metricas()
         if es_staff(self.request.user):
             return qs
         return qs.filter(usuario=self.request.user)
@@ -176,7 +196,7 @@ class PublicacionPublicViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ['-fechaPublicacion']
 
     def get_queryset(self):
-        qs = Publicacion.objects.select_related('categoria', 'usuario').prefetch_related('imagenes').all()
+        qs = queryset_con_metricas()
         if es_staff(self.request.user):
             return qs
         return qs.filter(estado__in=[Publicacion.Estado.PUBLICADA, Publicacion.Estado.ARCHIVADA])

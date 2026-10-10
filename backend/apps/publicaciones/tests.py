@@ -1018,6 +1018,34 @@ class L1EditarPublicadaTest(TestCase):
 
 
 # ======================================================================
+# P1 (Fase 3): sin N+1 en los listados
+# ======================================================================
+
+
+class P1SinNPlusOneTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.usuario = crear_usuario()
+        self.categoria = crear_categoria()
+        for i in range(5):
+            pub = crear_publicacion(
+                titulo=f'Pub P1 {i}', usuario=self.usuario,
+                categoria=self.categoria)
+            from apps.imagenes.models import Imagen
+            Imagen.objects.create(
+                nombre=f'Img {i}', ruta=f'/media/p1_{i}.png',
+                publicacion=pub)
+            crear_comentario(pub, self.usuario, estado=Comentario.Estado.APROBADO)
+
+    def test_listado_publico_acotado(self):
+        with self.assertNumQueries(3):
+            resp = self.client.get('/api/publicaciones/publicas/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.data['results']), 5)
+        self.assertTrue(all('portada' in p for p in resp.data['results']))
+
+
+# ======================================================================
 # L4 (Fase 3): máquina de estados validada
 # ======================================================================
 
