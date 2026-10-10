@@ -37,9 +37,19 @@ def _guardar_local(archivo, filename):
     return settings.MEDIA_URL.rstrip('/') + '/' + ruta_guardada
 
 
+def ruta_a_bucket_path(ruta, bucket):
+    """Extrae la ruta dentro del bucket desde la URL pública (L7)."""
+    marcador = f'/object/public/{bucket}/'
+    if marcador in ruta:
+        return ruta.split(marcador, 1)[1]
+    return ruta.rsplit('/', 1)[-1]
+
+
 def eliminar_imagen(ruta):
-    """Elimina el archivo fisico de una imagen (solo almacenamiento local)."""
+    """Elimina el archivo fisico de una imagen (local o Supabase)."""
     if getattr(settings, 'IMAGE_STORAGE', 'local') == 'supabase':
+        from .supabase import delete_image
+        delete_image(ruta_a_bucket_path(ruta, settings.SUPABASE_BUCKET))
         return
     from django.core.files.storage import default_storage
 

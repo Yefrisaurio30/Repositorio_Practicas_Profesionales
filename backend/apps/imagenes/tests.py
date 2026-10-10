@@ -131,3 +131,54 @@ class S4TipoArchivoTest(TestCase):
     def test_acepta_png_real(self):
         resp = self._subir('portada.png', png_valido(), 'image/png')
         self.assertEqual(resp.status_code, 201)
+
+
+class L7AlmacenamientoTest(TestCase):
+    """Borrado en Supabase, ruta local válida y limpieza en cascada (L7)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self._override = override_settings(MEDIA_ROOT=self._tmp.name)
+        self._override.enable()
+        self.addCleanup(self._override.disable)
+        self.addCleanup(self._tmp.cleanup)
+        self.client = APIClient()
+        self.staff = User.objects.create_user(
+            username=_siguiente('staff'), password='Stf12345!',
+            is_staff=True, is_superuser=True,
+        )
+        self.pub = crear_publicacion(self.staff)
+        self.client.force_authenticate(user=self.staff)
+
+    def test_ruta_local_pasa_validacion(self):
+        imagen = Imagen(
+            nombre='X', ruta='/media/publicaciones/x.png',
+            descripcion='', publicacion=self.pub,
+        )
+        imagen.full_clean()  # URLField la rechaza; CharField la acepta.
+
+    def test_supabase_borra_del_bucket(self):
+        from unittest import mock
+        with override_settings(IMAGE_STORAGE='supabase', SUPABASE_BUCKET='bkt'):
+            with mock.patch(
+                'apps.imagenes.utils.supabase.delete_image'
+            ) as mock_delete:
+                from apps.imagenes.utils.storage import eliminar_imagen
+                eliminar_imagen(
+                    'https://xyz.supabase.co/storage/v1/object/public/bkt/pub/a.png')
+        mock_delete.assert_called_once_with('pub/a.png')
+
+    def test_borrar_publicacion_limpia_archivos(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.core.files.storage import default_storage
+        archivo = SimpleUploadedFile(
+            'cascada.png', png_valido(), content_type='image/png')
+        resp = self.client.post('/api/imagenes/imagenes/', {
+            'archivo': archivo, 'publicacion': self.pub.pk, 'nombre': 'C',
+        }, format='multipart')
+        self.assertEqual(resp.status_code, 201)
+        ruta = Imagen.objects.get(pk=resp.data['id']).ruta
+        relativa = ruta.replace('/media/', '', 1)
+        self.assertTrue(default_storage.exists(relativa))
+        self.pub.delete()
+        self.assertFalse(default_storage.exists(relativa))
