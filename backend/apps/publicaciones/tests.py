@@ -175,7 +175,7 @@ class CU04_ComentariosAprobadosTest(TestCase):
     def test_solo_aprobados_visibles(self):
         resp = self.client.get('/api/comentarios/publicos/', {'publicacion_id': self.pub.pk})
         self.assertEqual(resp.status_code, 200)
-        contenidos = [c['contenido'] for c in resp.data]
+        contenidos = [c['contenido'] for c in resp.data['results']]
         self.assertIn('Aprobado', contenidos)
         self.assertNotIn('Pendiente', contenidos)
 
@@ -686,7 +686,7 @@ class FlujoCompletoComentarioTest(TestCase):
         # 2. No visible publicamente aun
         self.client.force_authenticate(user=None)
         resp = self.client.get('/api/comentarios/publicos/', {'publicacion_id': self.pub.pk})
-        contenidos = [c['contenido'] for c in resp.data]
+        contenidos = [c['contenido'] for c in resp.data['results']]
         self.assertNotIn('Muy interesante articulo', contenidos)
 
         # 3. Staff aprueba
@@ -697,7 +697,7 @@ class FlujoCompletoComentarioTest(TestCase):
         # 4. Ahora visible publicamente
         self.client.force_authenticate(user=None)
         resp = self.client.get('/api/comentarios/publicos/', {'publicacion_id': self.pub.pk})
-        contenidos = [c['contenido'] for c in resp.data]
+        contenidos = [c['contenido'] for c in resp.data['results']]
         self.assertIn('Muy interesante articulo', contenidos)
 
 

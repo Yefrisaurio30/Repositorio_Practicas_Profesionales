@@ -4,7 +4,8 @@ export const getComentariosPublicos = async (publicacionId) => {
   const { data } = await api.get('/comentarios/publicos/', {
     params: { publicacion_id: publicacionId },
   })
-  return data
+  // La API pagina desde L5: normaliza a arreglo.
+  return data.results ?? data
 }
 
 export const crearComentario = async (publicacionId, contenido) => {
