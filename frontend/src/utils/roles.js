@@ -2,7 +2,7 @@ export const isStaff = (user) => {
   if (!user) return false
   if (user.is_staff || user.is_superuser) return true
   return (user.roles || []).some((r) =>
-    ['Superadmin', 'Coordinación Central', 'Moderador', 'EditorPublicaciones'].includes(r),
+    ['Superadmin', 'Coordinación Central', 'Moderador', 'EditorPublicaciones'].includes(r)
   )
 }
 

@@ -6,7 +6,9 @@ export const getApiErrorMessage = (err, porDefecto = 'Ocurrió un error inespera
   if (typeof d === 'string') return d
   if (d.detail && typeof d.detail === 'string') return d.detail
   if (typeof d === 'object') {
-    const partes = Object.values(d).flat().filter((v) => typeof v === 'string')
+    const partes = Object.values(d)
+      .flat()
+      .filter((v) => typeof v === 'string')
     if (partes.length > 0) return partes.join(' ')
   }
   return porDefecto

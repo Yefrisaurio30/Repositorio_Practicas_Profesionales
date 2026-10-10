@@ -23,7 +23,12 @@ function PublicationCard({ pub }) {
       <div className="aspect-[16/10] bg-gradient-to-br from-uniminuto-100 to-uniminuto-200 overflow-hidden relative">
         <div className="w-full h-full bg-gradient-to-br from-uniminuto-100 via-uniminuto-50 to-leaf-100 flex items-center justify-center">
           <svg className="w-14 h-14 text-uniminuto-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+            />
           </svg>
         </div>
         {pub.categoria_detail && (
@@ -36,11 +41,7 @@ function PublicationCard({ pub }) {
         <h3 className="font-semibold text-gray-900 group-hover:text-uniminuto-600 transition-colors line-clamp-2 mb-2 leading-snug">
           {pub.titulo}
         </h3>
-        {pub.resumen && (
-          <p className="text-sm text-gray-500 line-clamp-2 mb-3 flex-1">
-            {pub.resumen}
-          </p>
-        )}
+        {pub.resumen && <p className="text-sm text-gray-500 line-clamp-2 mb-3 flex-1">{pub.resumen}</p>}
         <div className="flex items-center justify-between text-xs text-gray-400 mt-auto pt-2 border-t border-gray-50">
           <span>{fecha}</span>
           <span className="text-uniminuto-600 font-medium group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
@@ -141,9 +142,7 @@ export default function Buscar() {
     <div className="pt-16 min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
-            Búsqueda de Publicaciones
-          </h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Búsqueda de Publicaciones</h1>
           <p className="text-gray-500 text-sm">
             Explora, filtra y encuentra publicaciones de proyección social.
           </p>
@@ -159,7 +158,12 @@ export default function Buscar() {
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
             <input
               type="text"
@@ -174,7 +178,12 @@ export default function Buscar() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             )}
@@ -184,12 +193,15 @@ export default function Buscar() {
             className="sm:hidden flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+              />
             </svg>
             Filtros
-            {hasActiveFilters && (
-              <span className="w-2 h-2 bg-uniminuto-500 rounded-full" />
-            )}
+            {hasActiveFilters && <span className="w-2 h-2 bg-uniminuto-500 rounded-full" />}
           </button>
         </div>
 
@@ -242,8 +254,18 @@ export default function Buscar() {
 
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm mb-6 flex items-start gap-3">
-                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                <svg
+                  className="w-5 h-5 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
                 </svg>
                 <div>
                   <p className="font-medium">Error de conexión</p>
@@ -318,8 +340,18 @@ export default function Buscar() {
               </>
             ) : !error ? (
               <div className="text-center py-16 bg-white rounded-xl border border-gray-100">
-                <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  className="w-16 h-16 text-gray-300 mx-auto mb-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
                 <p className="text-gray-500 text-lg mb-2">No se encontraron resultados</p>
                 <p className="text-gray-400 text-sm mb-4">

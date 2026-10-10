@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  getComentariosPublicos,
-  crearComentario,
-} from '../services/comentariosService.js'
+import { getComentariosPublicos, crearComentario } from '../services/comentariosService.js'
 import { getApiErrorMessage } from '../utils/errores.js'
 
 // Sección de comentarios del detalle de publicación, extraída (F4).
@@ -52,11 +49,21 @@ export default function ComentariosSeccion({ publicacionId }) {
         >
           {toast.tipo === 'error' ? (
             <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+              />
             </svg>
           ) : (
             <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           )}
           <span>{toast.mensaje}</span>
@@ -71,9 +78,7 @@ export default function ComentariosSeccion({ publicacionId }) {
       <h3 className="text-lg font-semibold text-gray-900 mb-5">
         Comentarios
         {comentarios.length > 0 && (
-          <span className="ml-2 text-sm font-normal text-gray-400">
-            ({comentarios.length})
-          </span>
+          <span className="ml-2 text-sm font-normal text-gray-400">({comentarios.length})</span>
         )}
       </h3>
 
@@ -90,9 +95,7 @@ export default function ComentariosSeccion({ publicacionId }) {
             <p className="text-xs text-gray-400">
               Tu comentario será revisado por un moderador antes de publicarse.
             </p>
-            <div className="text-xs text-slate-400">
-              {nuevoComentario.length}/500
-            </div>
+            <div className="text-xs text-slate-400">{nuevoComentario.length}/500</div>
             <button
               type="submit"
               disabled={!nuevoComentario.trim() || enviandoComentario}
@@ -115,9 +118,7 @@ export default function ComentariosSeccion({ publicacionId }) {
                   </span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">
-                    {c.usuario_nombre}
-                  </p>
+                  <p className="text-sm font-semibold text-gray-900">{c.usuario_nombre}</p>
                   <p className="text-xs text-gray-400">
                     {new Date(c.fechaCreacion).toLocaleDateString('es-CO', {
                       year: 'numeric',
@@ -129,20 +130,26 @@ export default function ComentariosSeccion({ publicacionId }) {
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-gray-700 leading-relaxed pl-11">
-                {c.contenido}
-              </p>
+              <p className="text-sm text-gray-700 leading-relaxed pl-11">{c.contenido}</p>
             </div>
           ))}
         </div>
       ) : (
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
-          <svg className="w-10 h-10 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          <svg
+            className="w-10 h-10 text-gray-300 mx-auto mb-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
           </svg>
-          <p className="text-gray-500 text-sm">
-            Sé el primero en comentar esta publicación.
-          </p>
+          <p className="text-gray-500 text-sm">Sé el primero en comentar esta publicación.</p>
         </div>
       )}
     </div>

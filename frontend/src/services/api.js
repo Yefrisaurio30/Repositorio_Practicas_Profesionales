@@ -39,11 +39,11 @@ api.interceptors.response.use(
       window.dispatchEvent(
         new CustomEvent('auth:unauthorized', {
           detail: { next: window.location.pathname + window.location.search },
-        }),
+        })
       )
     }
     return Promise.reject(error)
-  },
+  }
 )
 
 export default api

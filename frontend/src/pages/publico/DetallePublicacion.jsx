@@ -18,9 +18,7 @@ function NotFound() {
         <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
           <span className="text-4xl font-bold text-gray-300">404</span>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">
-          Publicación no encontrada
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-3">Publicación no encontrada</h1>
         <p className="text-gray-500 mb-6">
           La publicación que busca no existe o ha sido removida del sistema.
         </p>
@@ -49,12 +47,15 @@ function ServerError() {
       <div className="text-center max-w-md">
         <div className="w-20 h-20 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
           <svg className="w-10 h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">
-          Error del servidor
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-3">Error del servidor</h1>
         <p className="text-gray-500 mb-6">
           Ocurrió un error al cargar la publicación. Por favor intente más tarde.
         </p>
@@ -76,9 +77,7 @@ function ImageGallery({ imagenes }) {
 
   return (
     <div className="mt-10">
-      <h2 className="text-xl font-bold text-gray-900 mb-5">
-        Galería de imágenes ({imagenes.length})
-      </h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-5">Galería de imágenes ({imagenes.length})</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {imagenes.map((img) => (
           <button
@@ -101,7 +100,12 @@ function ImageGallery({ imagenes }) {
               style={{ display: 'none' }}
             >
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
           </button>
@@ -113,10 +117,7 @@ function ImageGallery({ imagenes }) {
           className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
           onClick={() => setSelected(null)}
         >
-          <div
-            className="relative max-w-4xl w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="relative max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setSelected(null)}
               className="absolute -top-12 right-0 text-white/70 hover:text-white transition-colors"
@@ -192,7 +193,9 @@ export default function DetallePublicacion() {
       }
     }
     fetchData()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [id, user])
 
   if (loading) {
@@ -257,9 +260,15 @@ export default function DetallePublicacion() {
         {esPreview && (
           <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3 flex items-center gap-2">
             <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
-            Vista previa — En Revisión — No visible al público. Solo el administrador ve esto antes de publicar.
+            Vista previa — En Revisión — No visible al público. Solo el administrador ve esto antes de
+            publicar.
           </div>
         )}
 
@@ -286,30 +295,29 @@ export default function DetallePublicacion() {
                   {publicacion.usuario_nombre.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <span className="font-medium text-gray-700">
-                {publicacion.usuario_nombre}
-              </span>
+              <span className="font-medium text-gray-700">{publicacion.usuario_nombre}</span>
             </div>
           )}
           {fechaPub && (
             <div className="flex items-center gap-1.5">
               <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
               <span>{fechaPub}</span>
             </div>
           )}
           <span className="text-gray-300">·</span>
-          <span className="text-xs text-gray-400">
-            Creada el {fechaCreacion}
-          </span>
+          <span className="text-xs text-gray-400">Creada el {fechaCreacion}</span>
         </div>
 
         {publicacion.resumen && (
           <div className="bg-uniminuto-50/50 border border-uniminuto-100 rounded-xl p-5 mb-8">
-            <p className="text-gray-700 leading-relaxed italic">
-              {publicacion.resumen}
-            </p>
+            <p className="text-gray-700 leading-relaxed italic">{publicacion.resumen}</p>
           </div>
         )}
 
@@ -333,7 +341,12 @@ export default function DetallePublicacion() {
         className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 px-5 py-3 bg-uniminuto-600 text-white text-sm font-semibold rounded-full shadow-lg hover:bg-uniminuto-700 hover:shadow-xl transition-all"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.8}
+            d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+          />
         </svg>
         Enviar Solicitud
       </button>

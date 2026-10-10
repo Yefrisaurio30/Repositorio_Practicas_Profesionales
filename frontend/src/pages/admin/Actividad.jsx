@@ -39,7 +39,9 @@ export default function Actividad() {
     }
   }, [searchDebounced])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   return (
     <div>
@@ -49,8 +51,18 @@ export default function Actividad() {
       </div>
 
       <div className="relative mb-6 max-w-md">
-        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <svg
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
         </svg>
         <input
           type="text"
@@ -79,18 +91,30 @@ export default function Actividad() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50">
-                  <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">Acción</th>
-                  <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">Descripción</th>
-                  <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">Modelo</th>
-                  <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">Usuario</th>
-                  <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">Fecha</th>
+                  <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">
+                    Acción
+                  </th>
+                  <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">
+                    Descripción
+                  </th>
+                  <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">
+                    Modelo
+                  </th>
+                  <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">
+                    Usuario
+                  </th>
+                  <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">
+                    Fecha
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {registros.map((r) => (
                   <tr key={r.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                     <td className="px-5 py-3">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${ACCION_COLORS[r.accion] || 'bg-gray-100 text-gray-600'}`}>
+                      <span
+                        className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${ACCION_COLORS[r.accion] || 'bg-gray-100 text-gray-600'}`}
+                      >
                         {r.accion}
                       </span>
                     </td>
@@ -101,8 +125,10 @@ export default function Actividad() {
                     </td>
                     <td className="px-5 py-3 text-slate-400 whitespace-nowrap">
                       {new Date(r.fecha).toLocaleString('es-CO', {
-                        month: 'short', day: 'numeric',
-                        hour: '2-digit', minute: '2-digit',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
                       })}
                     </td>
                   </tr>
@@ -113,8 +139,18 @@ export default function Actividad() {
         </div>
       ) : (
         <div className="text-center py-16 bg-white rounded-xl border border-slate-200">
-          <svg className="w-14 h-14 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-14 h-14 text-gray-300 mx-auto mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <p className="text-gray-500 text-lg mb-1">No hay registros</p>
           <p className="text-gray-400 text-sm">La actividad aparecerá aquí cuando se realicen acciones.</p>

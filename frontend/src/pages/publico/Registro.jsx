@@ -26,10 +26,11 @@ function fuerzaPassword(pw) {
 }
 
 function usernameDesdeEmail(email) {
-  const base = (email.split('@')[0] || 'usuario')
-    .toLowerCase()
-    .replace(/[^a-z0-9._-]/g, '')
-    .slice(0, 30) || 'usuario'
+  const base =
+    (email.split('@')[0] || 'usuario')
+      .toLowerCase()
+      .replace(/[^a-z0-9._-]/g, '')
+      .slice(0, 30) || 'usuario'
   return base
 }
 
@@ -53,15 +54,16 @@ export default function Registro() {
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([
-      getPublicadas({ page_size: 1 }).catch(() => null),
-      getCategorias().catch(() => []),
-    ]).then(([pubs, cats]) => {
-      if (cancelled) return
-      const lista = Array.isArray(cats) ? cats : cats.results || []
-      setStats({ pubs: pubs?.count ?? null, programas: lista.length })
-    })
-    return () => { cancelled = true }
+    Promise.all([getPublicadas({ page_size: 1 }).catch(() => null), getCategorias().catch(() => [])]).then(
+      ([pubs, cats]) => {
+        if (cancelled) return
+        const lista = Array.isArray(cats) ? cats : cats.results || []
+        setStats({ pubs: pubs?.count ?? null, programas: lista.length })
+      }
+    )
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const handleSubmit = async (e) => {
@@ -106,17 +108,29 @@ export default function Registro() {
         <div className="hidden lg:flex w-[46%] relative overflow-hidden bg-uniminuto-800 flex-col justify-between p-12 xl:p-14">
           <div
             className="absolute inset-0 opacity-20 bg-cover bg-center"
-            style={{ backgroundImage: 'linear-gradient(180deg, rgba(26,33,72,.55), rgba(26,33,72,.92)), url(https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=80&auto=format&fit=crop)' }}
+            style={{
+              backgroundImage:
+                'linear-gradient(180deg, rgba(26,33,72,.55), rgba(26,33,72,.92)), url(https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=80&auto=format&fit=crop)',
+            }}
           />
           <div className="relative flex items-center gap-3">
             <div className="w-11 h-11 rounded-lg border border-white/30 bg-white/10 flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.6}
+                  d="M12 14l9-5-9-5-9 5 9 5zm0 0v6"
+                />
               </svg>
             </div>
             <div className="leading-tight">
-              <p className="text-white text-lg font-semibold tracking-[0.12em]">NEXUS <span className="text-blue-200 font-normal">ACADÉMICO</span></p>
-              <p className="text-blue-100/70 text-[10px] tracking-[0.2em]">PORTAL UNIVERSITARIO DE PROYECCIÓN SOCIAL</p>
+              <p className="text-white text-lg font-semibold tracking-[0.12em]">
+                NEXUS <span className="text-blue-200 font-normal">ACADÉMICO</span>
+              </p>
+              <p className="text-blue-100/70 text-[10px] tracking-[0.2em]">
+                PORTAL UNIVERSITARIO DE PROYECCIÓN SOCIAL
+              </p>
             </div>
           </div>
 
@@ -129,11 +143,13 @@ export default function Registro() {
               Iniciativa de Transformación Territorial
             </span>
             <h1 className="text-[42px] xl:text-[48px] font-bold text-white leading-[1.12] mb-5">
-              Sé parte del impacto<br />social universitario.
+              Sé parte del impacto
+              <br />
+              social universitario.
             </h1>
             <p className="text-blue-100/85 text-[16px] leading-relaxed max-w-md mb-8">
-              Regístrate para colaborar, comentar y postular proyectos que vinculan el
-              conocimiento científico y humanístico con las necesidades reales de nuestra sociedad.
+              Regístrate para colaborar, comentar y postular proyectos que vinculan el conocimiento científico
+              y humanístico con las necesidades reales de nuestra sociedad.
             </p>
             <div className="border-t border-white/15 pt-6 grid grid-cols-2 gap-4 max-w-md">
               <div className="rounded-lg border border-white/15 bg-white/5 p-4">
@@ -150,7 +166,12 @@ export default function Registro() {
           <div className="relative flex items-center justify-between text-blue-100/70 text-[13px]">
             <span className="inline-flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11m16-11v11" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.8}
+                  d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11m16-11v11"
+                />
               </svg>
               Vicerrectoría de Extensión y Desarrollo Social
             </span>
@@ -186,8 +207,18 @@ export default function Registro() {
                 Nombre Completo <span className="text-red-500">*</span>
               </label>
               <div className="relative mb-5">
-                <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a3 3 0 106 0 3 3 0 00-6 0zm12 5a3 3 0 01-6 0" />
+                <svg
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a3 3 0 106 0 3 3 0 00-6 0zm12 5a3 3 0 01-6 0"
+                  />
                 </svg>
                 <input
                   id="nombre"
@@ -207,8 +238,18 @@ export default function Registro() {
                 <span className="text-[11px] text-slate-400">Institucional o de entidad aliada</span>
               </div>
               <div className="relative mb-5">
-                <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
                 <input
                   id="email"
@@ -227,8 +268,18 @@ export default function Registro() {
                 Tipo de Usuario / Afiliación <span className="text-red-500">*</span>
               </label>
               <div className="relative mb-5">
-                <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                <svg
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
                 </svg>
                 <select
                   id="tipo"
@@ -237,9 +288,18 @@ export default function Registro() {
                   required
                   className="w-full pl-10 pr-9 py-2.5 border border-slate-300 rounded text-[14px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition-colors appearance-none bg-white"
                 >
-                  {TIPOS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  {TIPOS.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
                 </select>
-                <svg className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
@@ -250,8 +310,18 @@ export default function Registro() {
                     Contraseña <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    <svg
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.8}
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
                     </svg>
                     <input
                       id="pw"
@@ -262,11 +332,30 @@ export default function Registro() {
                       placeholder="Mínimo 8 caracteres"
                       className="w-full pl-10 pr-10 py-2.5 border border-slate-300 rounded text-[14px] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition-colors"
                     />
-                    <button type="button" onClick={() => setShowPw((v) => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" aria-label="Mostrar contraseña">
-                      <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <button
+                      type="button"
+                      onClick={() => setShowPw((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      aria-label="Mostrar contraseña"
+                    >
+                      <svg
+                        className="w-[18px] h-[18px]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.8}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.8}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -276,8 +365,18 @@ export default function Registro() {
                     Confirmar Contraseña <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    <svg
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 pointer-events-none"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.8}
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
                     </svg>
                     <input
                       id="pw2"
@@ -288,11 +387,30 @@ export default function Registro() {
                       placeholder="Repite la contraseña"
                       className="w-full pl-10 pr-10 py-2.5 border border-slate-300 rounded text-[14px] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition-colors"
                     />
-                    <button type="button" onClick={() => setShowPw2((v) => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" aria-label="Mostrar contraseña">
-                      <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <button
+                      type="button"
+                      onClick={() => setShowPw2((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      aria-label="Mostrar contraseña"
+                    >
+                      <svg
+                        className="w-[18px] h-[18px]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.8}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.8}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -309,10 +427,15 @@ export default function Registro() {
                 </div>
                 <div className="flex gap-1.5 mb-1.5">
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className={`h-1.5 flex-1 rounded-full ${i <= fuerza.nivel ? fuerza.color : 'bg-slate-200'}`} />
+                    <div
+                      key={i}
+                      className={`h-1.5 flex-1 rounded-full ${i <= fuerza.nivel ? fuerza.color : 'bg-slate-200'}`}
+                    />
                   ))}
                 </div>
-                <p className="text-[11px] text-slate-400">Usa al menos 8 caracteres con letras mayúsculas, números y símbolos.</p>
+                <p className="text-[11px] text-slate-400">
+                  Usa al menos 8 caracteres con letras mayúsculas, números y símbolos.
+                </p>
               </div>
 
               <label className="flex items-start gap-3 mb-6 cursor-pointer select-none">
@@ -323,8 +446,10 @@ export default function Registro() {
                   className="w-4 h-4 mt-0.5 rounded border-slate-300 accent-uniminuto-600 flex-shrink-0"
                 />
                 <span className="text-[13px] text-slate-600 leading-relaxed">
-                  He leído y acepto los <span className="text-blue-600 font-medium">Términos de Servicio</span> y autorizo el
-                  tratamiento de mis datos conforme a la <span className="text-blue-600 font-medium">Política de Privacidad Institucional</span> para
+                  He leído y acepto los{' '}
+                  <span className="text-blue-600 font-medium">Términos de Servicio</span> y autorizo el
+                  tratamiento de mis datos conforme a la{' '}
+                  <span className="text-blue-600 font-medium">Política de Privacidad Institucional</span> para
                   fines de investigación y proyección social. <span className="text-red-500">*</span>
                 </span>
               </label>
@@ -336,7 +461,12 @@ export default function Registro() {
                 className="w-full py-3.5 bg-uniminuto-600 text-white text-[15px] font-semibold rounded hover:bg-uniminuto-700 disabled:opacity-60 transition-colors shadow-sm inline-flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                  />
                 </svg>
                 {loading ? 'Creando cuenta...' : 'Registrarse'}
               </button>

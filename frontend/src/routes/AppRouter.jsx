@@ -20,9 +20,30 @@ export default function PublicRouter() {
           <Route path="/buscar" element={<Buscar />} />
           <Route path="/publicacion/:id" element={<DetallePublicacion />} />
           <Route path="/solicitud" element={<Solicitud />} />
-          <Route path="/mis-proyectos" element={<RutaProtegida><MisProyectos /></RutaProtegida>} />
-          <Route path="/mis-proyectos/nueva" element={<RutaProtegida><Propuesta /></RutaProtegida>} />
-          <Route path="/mis-proyectos/:id/editar" element={<RutaProtegida><Propuesta /></RutaProtegida>} />
+          <Route
+            path="/mis-proyectos"
+            element={
+              <RutaProtegida>
+                <MisProyectos />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/mis-proyectos/nueva"
+            element={
+              <RutaProtegida>
+                <Propuesta />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/mis-proyectos/:id/editar"
+            element={
+              <RutaProtegida>
+                <Propuesta />
+              </RutaProtegida>
+            }
+          />
         </Routes>
       </main>
       <Footer />

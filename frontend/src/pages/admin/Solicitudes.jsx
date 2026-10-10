@@ -1,5 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { getSolicitudes, cambiarEstadoSolicitud, eliminarSolicitud } from '../../services/solicitudesService.js'
+import {
+  getSolicitudes,
+  cambiarEstadoSolicitud,
+  eliminarSolicitud,
+} from '../../services/solicitudesService.js'
 import { useToast } from '../../context/ToastContext.jsx'
 import { getApiErrorMessage } from '../../utils/errores.js'
 
@@ -48,7 +52,9 @@ export default function Solicitudes() {
     }
   }, [searchDebounced, filtroEstado])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const handleEstado = async (s, estado) => {
     try {
@@ -75,15 +81,23 @@ export default function Solicitudes() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Solicitudes y Peticiones</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Gestiona las PQRS recibidas desde el portal público.
-        </p>
+        <p className="text-sm text-gray-500 mt-1">Gestiona las PQRS recibidas desde el portal público.</p>
       </div>
 
       <div className="mb-6 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
           <input
             type="text"
@@ -100,7 +114,9 @@ export default function Solicitudes() {
         >
           <option value="">Todos los estados</option>
           {Object.entries(ESTADOS).map(([value, cfg]) => (
-            <option key={value} value={value}>{cfg.label}</option>
+            <option key={value} value={value}>
+              {cfg.label}
+            </option>
           ))}
         </select>
       </div>
@@ -134,10 +150,14 @@ export default function Solicitudes() {
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${TIPO_COLOR[s.tipo] || 'bg-gray-100 text-gray-600'}`}>
+                      <span
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${TIPO_COLOR[s.tipo] || 'bg-gray-100 text-gray-600'}`}
+                      >
                         {s.tipo_display || s.tipo}
                       </span>
-                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${ESTADOS[s.estado]?.color || 'bg-gray-100 text-gray-600'}`}>
+                      <span
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${ESTADOS[s.estado]?.color || 'bg-gray-100 text-gray-600'}`}
+                      >
                         {s.estado_display || s.estado}
                       </span>
                     </div>
@@ -148,8 +168,11 @@ export default function Solicitudes() {
                     <p className="text-sm text-gray-600 leading-relaxed line-clamp-3 mb-2">{s.mensaje}</p>
                     <p className="text-xs text-gray-400">
                       {new Date(s.fecha).toLocaleString('es-CO', {
-                        year: 'numeric', month: 'short', day: 'numeric',
-                        hour: '2-digit', minute: '2-digit',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
                       })}
                     </p>
                   </div>
@@ -185,8 +208,18 @@ export default function Solicitudes() {
         </div>
       ) : (
         <div className="text-center py-16 bg-white rounded-xl border border-gray-100">
-          <svg className="w-14 h-14 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          <svg
+            className="w-14 h-14 text-gray-300 mx-auto mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+            />
           </svg>
           <p className="text-gray-500 text-lg mb-1">No hay solicitudes</p>
           <p className="text-gray-400 text-sm">Las solicitudes del portal apareceran aqui.</p>

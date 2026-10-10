@@ -18,7 +18,7 @@ export function ToastProvider({ children }) {
       setToasts((actual) => [...actual, { id, mensaje, tipo }])
       setTimeout(() => descartar(id), ms)
     },
-    [descartar],
+    [descartar]
   )
 
   // Modal propio en vez de window.confirm (F3). Resuelve true/false.
@@ -46,7 +46,10 @@ export function ToastProvider({ children }) {
       {children}
       <div className="fixed bottom-4 right-4 z-[200] flex flex-col gap-2 max-w-sm">
         {toasts.map((t) => (
-          <div key={t.id} className={`${estilos[t.tipo] || estilos.info} rounded-lg px-4 py-3 text-sm shadow-lg`}>
+          <div
+            key={t.id}
+            className={`${estilos[t.tipo] || estilos.info} rounded-lg px-4 py-3 text-sm shadow-lg`}
+          >
             {t.mensaje}
           </div>
         ))}

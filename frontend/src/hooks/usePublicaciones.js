@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import {
-  getPublicacionesAdmin,
-  getCategorias,
-} from '../services/publicacionesService.js'
+import { getPublicacionesAdmin, getCategorias } from '../services/publicacionesService.js'
 import { getDashboard } from '../services/reportesService.js'
 
 // Datos de la tabla admin de publicaciones: filtros, página y KPIs (F4).
@@ -28,7 +25,9 @@ export function usePublicaciones() {
     return () => clearTimeout(t)
   }, [search])
 
-  useEffect(() => { setPage(1) }, [estadoFiltro, categoriaFiltro, programaFiltro])
+  useEffect(() => {
+    setPage(1)
+  }, [estadoFiltro, categoriaFiltro, programaFiltro])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -50,7 +49,12 @@ export function usePublicaciones() {
       if (!categorias.length) setCategorias(catRes.results || catRes)
       if (dashRes?.publicaciones) {
         const p = dashRes.publicaciones
-        setKpis({ total: p.total || 0, publicadas: p.publicadas || 0, en_revision: p.en_revision || 0, borradores: p.borradores || 0 })
+        setKpis({
+          total: p.total || 0,
+          publicadas: p.publicadas || 0,
+          en_revision: p.en_revision || 0,
+          borradores: p.borradores || 0,
+        })
       }
     } catch {
       // silent
@@ -60,13 +64,28 @@ export function usePublicaciones() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, searchDebounced, estadoFiltro, categoriaFiltro, programaFiltro])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   return {
-    publicaciones, categorias, kpis,
-    search, setSearch, searchDebounced,
-    estadoFiltro, setEstadoFiltro,
-    categoriaFiltro, setCategoriaFiltro, programaFiltro, setProgramaFiltro,
-    page, setPage, count, pageSize, loading, fetchData,
+    publicaciones,
+    categorias,
+    kpis,
+    search,
+    setSearch,
+    searchDebounced,
+    estadoFiltro,
+    setEstadoFiltro,
+    categoriaFiltro,
+    setCategoriaFiltro,
+    programaFiltro,
+    setProgramaFiltro,
+    page,
+    setPage,
+    count,
+    pageSize,
+    loading,
+    fetchData,
   }
 }

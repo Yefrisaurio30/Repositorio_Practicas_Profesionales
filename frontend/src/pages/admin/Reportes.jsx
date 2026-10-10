@@ -7,7 +7,7 @@ function downloadCSV(rows, filename) {
   const headers = Object.keys(rows[0])
   const csv = [
     headers.join(','),
-    ...rows.map((r) => headers.map((h) => `"${String(r[h] ?? '').replace(/"/g, '""')}"`).join(','))
+    ...rows.map((r) => headers.map((h) => `"${String(r[h] ?? '').replace(/"/g, '""')}"`).join(',')),
   ].join('\n')
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
@@ -29,13 +29,12 @@ export default function Reportes() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([
-      getDashboard().catch(() => null),
-      getCategorias().catch(() => []),
-    ]).then(([d, c]) => {
-      setDashboard(d)
-      setCategorias(c)
-    }).finally(() => setLoading(false))
+    Promise.all([getDashboard().catch(() => null), getCategorias().catch(() => [])])
+      .then(([d, c]) => {
+        setDashboard(d)
+        setCategorias(c)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
   const fetchPublicaciones = useCallback(async () => {
@@ -53,7 +52,9 @@ export default function Reportes() {
     }
   }, [filtroCategoria, filtroEstado])
 
-  useEffect(() => { fetchPublicaciones() }, [fetchPublicaciones])
+  useEffect(() => {
+    fetchPublicaciones()
+  }, [fetchPublicaciones])
 
   const filteredPubs = publicaciones.filter((p) => {
     if (!fechaDesde && !fechaHasta) return true
@@ -111,7 +112,9 @@ export default function Reportes() {
             >
               <option value="">Todas</option>
               {categorias.map((c) => (
-                <option key={c.id} value={c.id}>{c.nombre}</option>
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
               ))}
             </select>
           </div>
@@ -153,7 +156,12 @@ export default function Reportes() {
               className="flex items-center gap-2 px-4 py-2 bg-leaf-600 text-white text-sm font-medium rounded-lg hover:bg-leaf-700 disabled:opacity-40 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
               Exportar CSV ({filteredPubs.length})
             </button>
@@ -163,7 +171,9 @@ export default function Reportes() {
 
       {loading ? (
         <div className="bg-white border border-gray-100 rounded-xl p-6 space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-10 skeleton w-full rounded" />)}
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-10 skeleton w-full rounded" />
+          ))}
         </div>
       ) : filteredPubs.length > 0 ? (
         <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
@@ -184,11 +194,17 @@ export default function Reportes() {
                     <td className="px-5 py-3 font-medium text-gray-900 max-w-xs truncate">{p.titulo}</td>
                     <td className="px-5 py-3 text-gray-600">{p.categoria_detail?.nombre || '-'}</td>
                     <td className="px-5 py-3">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        p.estado === 'PUBLICADA' ? 'bg-green-100 text-green-700'
-                        : p.estado === 'BORRADOR' ? 'bg-amber-100 text-amber-700'
-                        : 'bg-gray-100 text-gray-600'
-                      }`}>{p.estado}</span>
+                      <span
+                        className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
+                          p.estado === 'PUBLICADA'
+                            ? 'bg-green-100 text-green-700'
+                            : p.estado === 'BORRADOR'
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        {p.estado}
+                      </span>
                     </td>
                     <td className="px-5 py-3 text-gray-500">
                       {new Date(p.fechaCreacion).toLocaleDateString('es-CO')}

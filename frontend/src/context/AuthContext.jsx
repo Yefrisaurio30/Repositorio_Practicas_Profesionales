@@ -24,10 +24,18 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let cancelled = false
     getUsuarioActual()
-      .then((u) => { if (!cancelled) setUser(u) })
-      .catch(() => { if (!cancelled) setUser(null) })
-      .finally(() => { if (!cancelled) setLoading(false) })
-    return () => { cancelled = true }
+      .then((u) => {
+        if (!cancelled) setUser(u)
+      })
+      .catch(() => {
+        if (!cancelled) setUser(null)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   // Redirección 401 sin recarga completa (F2).
@@ -41,14 +49,11 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener(UNAUTH_EVENT, handler)
   }, [navigate])
 
-  const login = useCallback(
-    async (username, password, remember) => {
-      const u = await apiLogin(username, password, remember)
-      setUser(u)
-      return u
-    },
-    [],
-  )
+  const login = useCallback(async (username, password, remember) => {
+    const u = await apiLogin(username, password, remember)
+    setUser(u)
+    return u
+  }, [])
 
   const logout = useCallback(async () => {
     const res = await apiLogout()
@@ -57,9 +62,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, refresh }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, loading, login, logout, refresh }}>{children}</AuthContext.Provider>
   )
 }
 

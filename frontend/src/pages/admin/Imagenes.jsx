@@ -1,9 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import {
-  subirImagen,
-  getImagenes,
-  getPublicacionesAdmin,
-} from '../../services/publicacionesService.js'
+import { subirImagen, getImagenes, getPublicacionesAdmin } from '../../services/publicacionesService.js'
 import { useToast } from '../../context/ToastContext.jsx'
 import { getApiErrorMessage } from '../../utils/errores.js'
 
@@ -21,10 +17,7 @@ export default function Imagenes() {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const [imgRes, pubRes] = await Promise.all([
-        getImagenes(),
-        getPublicacionesAdmin(),
-      ])
+      const [imgRes, pubRes] = await Promise.all([getImagenes(), getPublicacionesAdmin()])
       setImagenes(imgRes.results || imgRes)
       setPublicaciones(pubRes.results || pubRes)
     } catch (err) {
