@@ -7,7 +7,6 @@ from apps.actividad.models import RegistroActividad
 from apps.comentarios.models import Comentario
 from apps.publicaciones.models import Categoria, Publicacion
 
-
 _contador = 0
 
 

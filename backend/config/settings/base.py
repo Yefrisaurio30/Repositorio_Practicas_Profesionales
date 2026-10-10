@@ -1,5 +1,4 @@
 """Configuración común. local.py y prod.py heredan de aquí (C1)."""
-import os
 from pathlib import Path
 from decouple import config
 
