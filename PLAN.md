@@ -51,6 +51,33 @@ T2 (StorageError → 502 con mensaje; LOGGING en base; Sentry pendiente de
 dependencia + DSN).
 Suite: 119 tests, solo el fallo preexistente. `npm run build`: OK.
 
+## Estado Fase 4 — HECHA (2026-10-09)
+
+C7 (tailwindcss v3 + postcss compilados, paleta migrada, CDN eliminado; CSS
+43 KB con paleta verificada), R3 (`README.md` con requisitos, Docker, seed y
+tests), P4 (1 vista por sesión/1 h + `from_db()` sin SELECT en
+Publicacion/Comentario), F4 (`usePublicaciones`, `ComentariosSeccion`,
+`EstadoPill` + `utils/estados.js`; Detalle usa `useAuth`; sin react-query por
+ser dependencia nueva no autorizada), F5 (tildes y eñes en backend/frontend;
+`Moderator`→`Moderador`; migración 0002 de actividad por etiquetas),
+F6 (ESLint+react-hooks, Prettier, ruff con `pyproject`, Vitest con 4 tests de
+`errores`; `set-state-in-effect` en warn por adopción incremental; 2 errores
+reales `refs` corregidos; normalización Prettier de 37 ficheros; gates ruff,
+eslint, vitest y build añadidos al CI).
+Suite final: 121 tests backend (solo el fallo preexistente) + 4 Vitest.
+`npm run lint`: 0 errores. `ruff check backend`: limpio. Build: OK.
+
+## Pendiente de tus decisiones (no se hizo sin autorización)
+
+- Rotar secretos del commit 8b2b9b4 (S5): SECRET_KEY, DB_PASSWORD,
+  SUPABASE_* y claves derivadas. Yo no toco secretos ni el historial.
+- CAPTCHA/honeypot en formularios públicos (S7) y Sentry (T2): requieren
+  dependencia/servicio externo.
+- Django 5.2 LTS y SearchVector "spanish" (C6/P3): solo-Postgres, posterior.
+- `@tanstack/react-query` (F4): no instalado por ser dependencia nueva.
+- Staff ve borradores en `/publicas/` (fallo E2E preexistente verificado en
+  base): cambiarlo altera el contrato del preview.
+
 Estados: `confirmado` = verificado contra código real.
 `ya resuelto` / `no aplica` = ninguno (35 confirmados plenos, 1 confirmado con matiz).
 
