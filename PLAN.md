@@ -30,6 +30,27 @@ con `get` en vez del `os.environ[]` estricto del informe), R1 (`git rm
 `manage.py test` y build frontend; pasos ruff/eslint llegan en F6).
 Suite: 96 tests, solo el fallo preexistente de Fase 1. `npm run build`: OK.
 
+## Estado Fase 3 — HECHA (2026-10-09)
+
+L4 (TRANSICIONES + `cambiar_estado`; archivar borrador y ARCHIVADA→revisión
+dan 400 — cambio de contrato avisado), L5 (publicos valida entero, solo
+visibles, paginado; `comentariosService` normaliza `results`), L6
+(contenido/publicacion read-only), L7 (borrado Supabase real, sin duplicado,
+`ruta` CharField + migración 0002, `post_delete` limpia archivos), C3
+(DEBUG/HOSTS/CORS de env), C4 (`docker-compose.prod.yml` + Dockerfiles prod
+gunicorn no-root + nginx multi-stage; sin daemon aquí: solo validado YAML),
+C5 (Postgres dev solo `127.0.0.1`), C6 (`requirements.in` + `.txt` pineado
+Django 4.2; Python 3.12; Django 5.2 LTS queda pendiente), R2 (`*.tar.gz` al
+`.gitignore`, respaldos intactos), P1 (3 queries por listado), P2 (paginado
+trazabilidad/usuarios/solicitudes/pendientes; frontend ya normalizaba),
+P3 (índice estado+fecha + migración 0003; SearchVector queda pendiente por
+ser solo-Postgres), F1 (AuthContext + RutaProtegida; mueren
+RutaPrivada/RutaAutenticada), F2 (401 por evento + `?next=`), F3
+(ToastContext + `confirmar()` + `getApiErrorMessage`; 0 `alert`/`confirm`),
+T2 (StorageError → 502 con mensaje; LOGGING en base; Sentry pendiente de
+dependencia + DSN).
+Suite: 119 tests, solo el fallo preexistente. `npm run build`: OK.
+
 Estados: `confirmado` = verificado contra código real.
 `ya resuelto` / `no aplica` = ninguno (35 confirmados plenos, 1 confirmado con matiz).
 
