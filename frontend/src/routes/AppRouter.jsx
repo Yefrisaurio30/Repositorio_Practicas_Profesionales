@@ -2,7 +2,7 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar.jsx'
 import Footer from '../components/layout/Footer.jsx'
-import RutaAutenticada from './RutaAutenticada.jsx'
+import RutaProtegida from './RutaProtegida.jsx'
 import Inicio from '../pages/publico/Inicio.jsx'
 import Buscar from '../pages/publico/Buscar.jsx'
 import DetallePublicacion from '../pages/publico/DetallePublicacion.jsx'
@@ -20,9 +20,30 @@ export default function PublicRouter() {
           <Route path="/buscar" element={<Buscar />} />
           <Route path="/publicacion/:id" element={<DetallePublicacion />} />
           <Route path="/solicitud" element={<Solicitud />} />
-          <Route path="/mis-proyectos" element={<RutaAutenticada><MisProyectos /></RutaAutenticada>} />
-          <Route path="/mis-proyectos/nueva" element={<RutaAutenticada><Propuesta /></RutaAutenticada>} />
-          <Route path="/mis-proyectos/:id/editar" element={<RutaAutenticada><Propuesta /></RutaAutenticada>} />
+          <Route
+            path="/mis-proyectos"
+            element={
+              <RutaProtegida>
+                <MisProyectos />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/mis-proyectos/nueva"
+            element={
+              <RutaProtegida>
+                <Propuesta />
+              </RutaProtegida>
+            }
+          />
+          <Route
+            path="/mis-proyectos/:id/editar"
+            element={
+              <RutaProtegida>
+                <Propuesta />
+              </RutaProtegida>
+            }
+          />
         </Routes>
       </main>
       <Footer />

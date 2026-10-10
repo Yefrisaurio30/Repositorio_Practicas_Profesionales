@@ -13,8 +13,8 @@ export default function Solicitud() {
           Solicitud o Petición de Proyecto
         </h1>
         <p className="text-slate-500 mb-8">
-          Envía tu propuesta a la Dirección de Proyección Social. Llegará directamente
-          al panel administrativo para su revisión.
+          Envía tu propuesta a la Dirección de Proyección Social. Llegará directamente al panel administrativo
+          para su revisión.
         </p>
         {!open && (
           <button

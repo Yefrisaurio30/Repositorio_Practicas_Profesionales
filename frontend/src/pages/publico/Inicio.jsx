@@ -4,7 +4,8 @@ import { getPublicadas, getCategorias } from '../../services/publicacionesServic
 
 function mesAnio(fechaISO) {
   if (!fechaISO) return ''
-  return new Date(fechaISO).toLocaleDateString('es-CO', { month: 'short', year: 'numeric' })
+  return new Date(fechaISO)
+    .toLocaleDateString('es-CO', { month: 'short', year: 'numeric' })
     .replace('.', '')
     .replace(/^./, (c) => c.toUpperCase())
 }
@@ -19,11 +20,20 @@ function ProjectCard({ pub }) {
     >
       <div className="aspect-[16/10] overflow-hidden relative bg-blue-50">
         {pub.portada ? (
-          <img src={pub.portada} alt={pub.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <img
+            src={pub.portada}
+            alt={pub.titulo}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center">
             <svg className="w-14 h-14 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+              />
             </svg>
           </div>
         )}
@@ -35,7 +45,12 @@ function ProjectCard({ pub }) {
           </span>
           <span className="inline-flex items-center gap-1 text-xs text-slate-500 whitespace-nowrap">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
             </svg>
             {fecha}
           </span>
@@ -44,21 +59,31 @@ function ProjectCard({ pub }) {
           {pub.titulo}
         </h3>
         {pub.resumen && (
-          <p className="text-sm text-slate-500 line-clamp-3 mb-4 flex-1 leading-relaxed">
-            {pub.resumen}
-          </p>
+          <p className="text-sm text-slate-500 line-clamp-3 mb-4 flex-1 leading-relaxed">{pub.resumen}</p>
         )}
         <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100">
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${
-            activo ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-500'
-          }`}>
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${
+              activo ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-500'
+            }`}
+          >
             {activo ? (
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             ) : (
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"
+                />
               </svg>
             )}
             {activo ? 'Proyecto Activo' : 'Completado'}
@@ -66,7 +91,12 @@ function ProjectCard({ pub }) {
           <span className="text-blue-600 text-sm font-semibold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
             Ver detalles
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
             </svg>
           </span>
         </div>
@@ -128,7 +158,9 @@ export default function Inicio() {
     return () => clearTimeout(t)
   }, [search])
 
-  useEffect(() => { setPage(1) }, [categoria, estado])
+  useEffect(() => {
+    setPage(1)
+  }, [categoria, estado])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -149,7 +181,9 @@ export default function Inicio() {
     }
   }, [page, searchDebounced, categoria, estado])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const totalPages = Math.max(1, Math.ceil(count / pageSize))
 
@@ -166,12 +200,22 @@ export default function Inicio() {
             Innovación para un Futuro Mejor
           </h1>
           <p className="text-slate-500 text-[15px] sm:text-base leading-relaxed max-w-2xl mx-auto mb-8">
-            Descubre los proyectos de proyección social de nuestra universidad. Impulsando el
-            cambio comunitario a través de la excelencia académica y la colaboración interdisciplinaria.
+            Descubre los proyectos de proyección social de nuestra universidad. Impulsando el cambio
+            comunitario a través de la excelencia académica y la colaboración interdisciplinaria.
           </p>
           <div className="relative max-w-2xl mx-auto">
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
             <input
               type="text"
@@ -191,25 +235,59 @@ export default function Inicio() {
               <h3 className="text-[15px] font-bold text-uniminuto-800 mb-4">Programas</h3>
               <div className="space-y-3">
                 <label className="flex items-start gap-2.5 cursor-pointer">
-                  <input type="radio" name="prog" checked={categoria === ''} onChange={() => setCategoria('')} className="sr-only" />
+                  <input
+                    type="radio"
+                    name="prog"
+                    checked={categoria === ''}
+                    onChange={() => setCategoria('')}
+                    className="sr-only"
+                  />
                   <span className={radioCls(categoria === '')}>
                     {categoria === '' && (
-                      <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth={3} stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                          d="M5 13l4 4L19 7"
+                          strokeWidth={3}
+                          stroke="currentColor"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     )}
                   </span>
-                  <span className={`text-[13px] leading-snug ${categoria === '' ? 'font-semibold text-slate-800' : 'text-slate-600'}`}>
+                  <span
+                    className={`text-[13px] leading-snug ${categoria === '' ? 'font-semibold text-slate-800' : 'text-slate-600'}`}
+                  >
                     Todos los programas
                   </span>
                 </label>
                 {categorias.map((c) => (
                   <label key={c.id} className="flex items-start gap-2.5 cursor-pointer">
-                    <input type="radio" name="prog" checked={String(categoria) === String(c.id)} onChange={() => setCategoria(c.id)} className="sr-only" />
+                    <input
+                      type="radio"
+                      name="prog"
+                      checked={String(categoria) === String(c.id)}
+                      onChange={() => setCategoria(c.id)}
+                      className="sr-only"
+                    />
                     <span className={radioCls(String(categoria) === String(c.id))}>
                       {String(categoria) === String(c.id) && (
-                        <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth={3} stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                          <path
+                            d="M5 13l4 4L19 7"
+                            strokeWidth={3}
+                            stroke="currentColor"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
                       )}
                     </span>
-                    <span className={`text-[13px] leading-snug ${String(categoria) === String(c.id) ? 'font-semibold text-slate-800' : 'text-slate-600'}`}>
+                    <span
+                      className={`text-[13px] leading-snug ${String(categoria) === String(c.id) ? 'font-semibold text-slate-800' : 'text-slate-600'}`}
+                    >
                       {c.nombre}
                     </span>
                   </label>
@@ -222,11 +300,19 @@ export default function Inicio() {
               <div className="space-y-3">
                 {ESTADOS.map((e) => (
                   <label key={e.value} className="flex items-center gap-2.5 cursor-pointer">
-                    <input type="radio" name="est" checked={estado === e.value} onChange={() => setEstado(e.value)} className="sr-only" />
+                    <input
+                      type="radio"
+                      name="est"
+                      checked={estado === e.value}
+                      onChange={() => setEstado(e.value)}
+                      className="sr-only"
+                    />
                     <span className={radioCls(estado === e.value)}>
                       {estado === e.value && <span className="w-2 h-2 bg-blue-600 rounded-full" />}
                     </span>
-                    <span className={`text-[13px] ${estado === e.value ? 'font-semibold text-slate-800' : 'text-slate-600'}`}>
+                    <span
+                      className={`text-[13px] ${estado === e.value ? 'font-semibold text-slate-800' : 'text-slate-600'}`}
+                    >
                       {e.label}
                     </span>
                   </label>
@@ -238,16 +324,30 @@ export default function Inicio() {
           <div className="flex-1 min-w-0">
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))}
               </div>
             ) : publicaciones.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                {publicaciones.map((pub) => <ProjectCard key={pub.id} pub={pub} />)}
+                {publicaciones.map((pub) => (
+                  <ProjectCard key={pub.id} pub={pub} />
+                ))}
               </div>
             ) : (
               <div className="text-center py-20 bg-white rounded-xl border border-slate-200">
-                <svg className="w-14 h-14 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  className="w-14 h-14 text-slate-300 mx-auto mb-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
                 <p className="text-slate-500 text-lg mb-1">Sin resultados</p>
                 <p className="text-slate-400 text-sm">Prueba con otros filtros o términos de búsqueda.</p>
@@ -271,7 +371,9 @@ export default function Inicio() {
                     key={n}
                     onClick={() => setPage(n)}
                     className={`w-9 h-9 text-sm font-semibold rounded-lg transition-colors ${
-                      n === page ? 'bg-uniminuto-600 text-white' : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                      n === page
+                        ? 'bg-uniminuto-600 text-white'
+                        : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                     }`}
                   >
                     {n}
@@ -282,7 +384,9 @@ export default function Inicio() {
                   <button
                     onClick={() => setPage(totalPages)}
                     className={`w-9 h-9 text-sm font-semibold rounded-lg transition-colors ${
-                      totalPages === page ? 'bg-uniminuto-600 text-white' : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                      totalPages === page
+                        ? 'bg-uniminuto-600 text-white'
+                        : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                     }`}
                   >
                     {totalPages}
@@ -331,9 +435,9 @@ export default function Inicio() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 text-center">
           <h2 className="text-2xl font-bold text-uniminuto-800 mb-3">Acerca del portal</h2>
           <p className="text-slate-500 text-[15px] leading-relaxed">
-            El Portal de Proyección Social de UNIMINUTO visibiliza los proyectos que vinculan el
-            conocimiento académico con las necesidades de las comunidades. Aquí puedes explorar
-            iniciativas, conocer sus resultados y enviar solicitudes a la Dirección de Proyección Social.
+            El Portal de Proyección Social de UNIMINUTO visibiliza los proyectos que vinculan el conocimiento
+            académico con las necesidades de las comunidades. Aquí puedes explorar iniciativas, conocer sus
+            resultados y enviar solicitudes a la Dirección de Proyección Social.
           </p>
         </div>
       </section>

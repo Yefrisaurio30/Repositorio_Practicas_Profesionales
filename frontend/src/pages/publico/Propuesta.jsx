@@ -35,11 +35,11 @@ export default function Propuesta() {
       <div className="pt-[68px] min-h-screen bg-[#f4f7fb]">
         <div className="max-w-xl mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-bold text-slate-900 mb-2">Propuesta no encontrada</h1>
-          <p className="text-slate-500 text-sm mb-6">
-            No tienes acceso a esta propuesta o fue eliminada.
-          </p>
-          <Link to="/mis-proyectos"
-            className="px-6 py-2.5 bg-uniminuto-600 text-white text-sm font-semibold rounded-lg hover:bg-uniminuto-700 transition-colors">
+          <p className="text-slate-500 text-sm mb-6">No tienes acceso a esta propuesta o fue eliminada.</p>
+          <Link
+            to="/mis-proyectos"
+            className="px-6 py-2.5 bg-uniminuto-600 text-white text-sm font-semibold rounded-lg hover:bg-uniminuto-700 transition-colors"
+          >
             Volver a Mis Proyectos
           </Link>
         </div>

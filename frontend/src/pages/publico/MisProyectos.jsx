@@ -5,17 +5,14 @@ import {
   eliminarPublicacion,
   enviarRevision,
 } from '../../services/publicacionesService.js'
-
-const ESTADOS = {
-  BORRADOR: { label: 'Borrador', pill: 'bg-slate-100 text-slate-600' },
-  EN_REVISION: { label: 'En Revisión', pill: 'bg-blue-50 text-blue-700' },
-  PUBLICADA: { label: 'Publicado', pill: 'bg-green-50 text-green-700' },
-  ARCHIVADA: { label: 'Archivado', pill: 'bg-slate-100 text-slate-600' },
-}
+import { useToast } from '../../context/ToastContext.jsx'
+import { getApiErrorMessage } from '../../utils/errores.js'
+import EstadoPill from '../../components/EstadoPill.jsx'
 
 export default function MisProyectos() {
   const [propuestas, setPropuestas] = useState([])
   const [loading, setLoading] = useState(true)
+  const { toast, confirmar } = useToast()
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -29,15 +26,17 @@ export default function MisProyectos() {
     }
   }, [])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const handleEliminar = async (p) => {
-    if (!confirm(`¿Desea eliminar su propuesta "${p.titulo}"?`)) return
+    if (!(await confirmar(`¿Desea eliminar su propuesta "${p.titulo}"?`))) return
     try {
       await eliminarPublicacion(p.id)
       fetchData()
     } catch {
-      alert('Error al eliminar.')
+      toast('Error al eliminar.', 'error')
     }
   }
 
@@ -46,7 +45,7 @@ export default function MisProyectos() {
       await enviarRevision(p.id)
       fetchData()
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error al enviar a revisión.')
+      toast(getApiErrorMessage(err, 'Error al enviar a revisión.'), 'error')
     }
   }
 
@@ -84,10 +83,7 @@ export default function MisProyectos() {
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${ESTADOS[p.estado]?.pill || 'bg-slate-100 text-slate-600'}`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        {ESTADOS[p.estado]?.label || p.estado}
-                      </span>
+                      <EstadoPill estado={p.estado} />
                       {p.categoria_detail && (
                         <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700">
                           {p.categoria_detail.nombre}
@@ -98,7 +94,8 @@ export default function MisProyectos() {
                     {p.resumen && <p className="text-sm text-slate-500 line-clamp-2">{p.resumen}</p>}
                     {p.estado === 'BORRADOR' && (
                       <p className="text-xs text-amber-600 mt-1.5">
-                        Esta propuesta aún no fue enviada. Envíala a revisión para que el administrador la evalúe.
+                        Esta propuesta aún no fue enviada. Envíala a revisión para que el administrador la
+                        evalúe.
                       </p>
                     )}
                     {p.estado === 'EN_REVISION' && (
@@ -145,11 +142,23 @@ export default function MisProyectos() {
           </div>
         ) : (
           <div className="text-center py-20 bg-white rounded-xl border border-slate-200">
-            <svg className="w-14 h-14 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <svg
+              className="w-14 h-14 text-slate-300 mx-auto mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
             <p className="text-slate-500 text-lg mb-1">Aún no tienes propuestas</p>
-            <p className="text-slate-400 text-sm mb-6">Crea tu primera propuesta de proyecto de proyección social.</p>
+            <p className="text-slate-400 text-sm mb-6">
+              Crea tu primera propuesta de proyecto de proyección social.
+            </p>
             <Link
               to="/mis-proyectos/nueva"
               className="px-6 py-2.5 bg-uniminuto-600 text-white text-sm font-semibold rounded-lg hover:bg-uniminuto-700 transition-colors"

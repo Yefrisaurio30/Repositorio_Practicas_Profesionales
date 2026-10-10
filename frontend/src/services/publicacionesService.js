@@ -48,7 +48,14 @@ export const eliminarPublicacion = async (id) => {
 }
 
 export const cambiarEstado = async (id, estado) => {
-  const action = estado === 'PUBLICADA' ? 'publicar' : estado === 'BORRADOR' ? 'despublicar' : estado === 'EN_REVISION' ? 'enviar-revision' : 'archivar'
+  const action =
+    estado === 'PUBLICADA'
+      ? 'publicar'
+      : estado === 'BORRADOR'
+        ? 'despublicar'
+        : estado === 'EN_REVISION'
+          ? 'enviar-revision'
+          : 'archivar'
   const { data } = await api.post(`/publicaciones/publicaciones/${id}/${action}/`)
   return data
 }

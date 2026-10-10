@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { getUsuarioActual, logout } from '../../services/authService.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { isStaff } from '../../utils/roles.js'
 
 const NAV_LINKS = [
@@ -27,11 +27,12 @@ function iniciales(nombre) {
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [user, setUser] = useState(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [logoutError, setLogoutError] = useState('')
   const menuRef = useRef(null)
   const location = useLocation()
   const navigate = useNavigate()
+  const { user, logout } = useAuth()
 
   const handleLogout = async () => {
     const res = await logout()
@@ -39,15 +40,10 @@ export default function Navbar() {
     if (res.ok) {
       navigate('/login', { replace: true })
     } else {
-      alert('No se pudo cerrar sesión: ' + res.error)
+      setLogoutError('No se pudo cerrar sesión: ' + res.error)
+      setTimeout(() => setLogoutError(''), 5000)
     }
   }
-
-  useEffect(() => {
-    let cancelled = false
-    getUsuarioActual().then((u) => { if (!cancelled) setUser(u) })
-    return () => { cancelled = true }
-  }, [location.pathname])
 
   useEffect(() => {
     setOpen(false)
@@ -107,9 +103,13 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden md:flex items-center gap-1">
-              {(links).map((link) =>
+              {links.map((link) =>
                 link.hash ? (
-                  <a key={link.to} href={link.to} className="px-3 py-2 text-[14px] font-medium text-slate-600 hover:text-uniminuto-800 transition-colors">
+                  <a
+                    key={link.to}
+                    href={link.to}
+                    className="px-3 py-2 text-[14px] font-medium text-slate-600 hover:text-uniminuto-800 transition-colors"
+                  >
                     {link.label}
                   </a>
                 ) : (
@@ -117,7 +117,9 @@ export default function Navbar() {
                     {({ isActive }) => (
                       <>
                         {link.label}
-                        {isActive && <span className="absolute left-3 right-3 -bottom-[1px] h-[2px] bg-uniminuto-800 rounded-full" />}
+                        {isActive && (
+                          <span className="absolute left-3 right-3 -bottom-[1px] h-[2px] bg-uniminuto-800 rounded-full" />
+                        )}
                       </>
                     )}
                   </NavLink>
@@ -141,21 +143,32 @@ export default function Navbar() {
                     <span className="text-[13px] font-medium text-slate-700 max-w-[120px] truncate">
                       {nombreMostrar}
                     </span>
-                    <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-4 h-4 text-slate-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
                   {dropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl border border-slate-200 shadow-lg py-1 z-50 animate-fade-up">
                       <button
-                        onClick={() => { navigate('/mis-proyectos'); setDropdownOpen(false); }}
+                        onClick={() => {
+                          navigate('/mis-proyectos')
+                          setDropdownOpen(false)
+                        }}
                         className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
                       >
                         Mis Proyectos
                       </button>
                       {isStaffFlag && (
                         <button
-                          onClick={() => { navigate('/admin/dashboard'); setDropdownOpen(false); }}
+                          onClick={() => {
+                            navigate('/admin/dashboard')
+                            setDropdownOpen(false)
+                          }}
                           className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
                         >
                           Panel Admin
@@ -172,7 +185,10 @@ export default function Navbar() {
                   )}
                 </div>
               ) : (
-                <Link to="/login" className="text-[14px] font-semibold text-uniminuto-800 hover:text-blue-600 transition-colors">
+                <Link
+                  to="/login"
+                  className="text-[14px] font-semibold text-uniminuto-800 hover:text-blue-600 transition-colors"
+                >
                   Iniciar sesión
                 </Link>
               )}
@@ -193,9 +209,19 @@ export default function Navbar() {
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {open ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>
@@ -205,16 +231,18 @@ export default function Navbar() {
         {open && (
           <div ref={menuRef} className="md:hidden bg-white border-t border-slate-100 shadow-lg">
             <div className="px-4 py-3 space-y-1">
-              {links.filter((l) => !l.hash).map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  end={link.end}
-                  className="block px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"
-                >
-                  {link.label}
-                </NavLink>
-              ))}
+              {links
+                .filter((l) => !l.hash)
+                .map((link) => (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    end={link.end}
+                    className="block px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"
+                  >
+                    {link.label}
+                  </NavLink>
+                ))}
               <div className="pt-2 border-t border-slate-100 mt-2 space-y-2">
                 {user ? (
                   <Link
@@ -225,10 +253,16 @@ export default function Navbar() {
                   </Link>
                 ) : (
                   <>
-                    <Link to="/login" className="block text-center px-4 py-3 bg-slate-100 text-slate-700 text-sm font-semibold rounded-lg">
+                    <Link
+                      to="/login"
+                      className="block text-center px-4 py-3 bg-slate-100 text-slate-700 text-sm font-semibold rounded-lg"
+                    >
                       Iniciar sesión
                     </Link>
-                    <Link to="/login" className="block text-center px-4 py-3 bg-uniminuto-600 text-white text-sm font-semibold rounded-lg">
+                    <Link
+                      to="/login"
+                      className="block text-center px-4 py-3 bg-uniminuto-600 text-white text-sm font-semibold rounded-lg"
+                    >
                       Acceso Admin
                     </Link>
                   </>
@@ -238,6 +272,11 @@ export default function Navbar() {
           </div>
         )}
       </nav>
+      {logoutError && (
+        <div className="fixed top-20 right-4 z-50 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 shadow-lg">
+          {logoutError}
+        </div>
+      )}
     </>
   )
 }

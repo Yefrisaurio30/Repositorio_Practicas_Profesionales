@@ -5,12 +5,10 @@ import {
   getImagenesPublicacion,
   getPublicacionAdmin,
 } from '../../services/publicacionesService.js'
-import { getUsuarioActual } from '../../services/authService.js'
-import {
-  getComentariosPublicos,
-  crearComentario,
-} from '../../services/comentariosService.js'
+import { useAuth } from '../../context/AuthContext.jsx'
+import { isStaff } from '../../utils/roles.js'
 import SolicitudModal from '../../components/SolicitudModal.jsx'
+import ComentariosSeccion from '../../components/ComentariosSeccion.jsx'
 
 function NotFound() {
   const navigate = useNavigate()
@@ -20,9 +18,7 @@ function NotFound() {
         <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
           <span className="text-4xl font-bold text-gray-300">404</span>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">
-          Publicación no encontrada
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-3">Publicación no encontrada</h1>
         <p className="text-gray-500 mb-6">
           La publicación que busca no existe o ha sido removida del sistema.
         </p>
@@ -51,12 +47,15 @@ function ServerError() {
       <div className="text-center max-w-md">
         <div className="w-20 h-20 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
           <svg className="w-10 h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">
-          Error del servidor
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-3">Error del servidor</h1>
         <p className="text-gray-500 mb-6">
           Ocurrió un error al cargar la publicación. Por favor intente más tarde.
         </p>
@@ -78,9 +77,7 @@ function ImageGallery({ imagenes }) {
 
   return (
     <div className="mt-10">
-      <h2 className="text-xl font-bold text-gray-900 mb-5">
-        Galería de imágenes ({imagenes.length})
-      </h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-5">Galería de imágenes ({imagenes.length})</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {imagenes.map((img) => (
           <button
@@ -103,7 +100,12 @@ function ImageGallery({ imagenes }) {
               style={{ display: 'none' }}
             >
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             </div>
           </button>
@@ -115,10 +117,7 @@ function ImageGallery({ imagenes }) {
           className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
           onClick={() => setSelected(null)}
         >
-          <div
-            className="relative max-w-4xl w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="relative max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setSelected(null)}
               className="absolute -top-12 right-0 text-white/70 hover:text-white transition-colors"
@@ -145,12 +144,9 @@ function ImageGallery({ imagenes }) {
 export default function DetallePublicacion() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [publicacion, setPublicacion] = useState(null)
   const [imagenes, setImagenes] = useState([])
-  const [comentarios, setComentarios] = useState([])
-  const [nuevoComentario, setNuevoComentario] = useState('')
-  const [enviandoComentario, setEnviandoComentario] = useState(false)
-  const [toast, setToast] = useState(null)
   const [loading, setLoading] = useState(true)
   const [errorCode, setErrorCode] = useState(null)
   const [solicitudOpen, setSolicitudOpen] = useState(false)
@@ -177,9 +173,7 @@ export default function DetallePublicacion() {
         const status = err.response?.status
         if (status === 404) {
           try {
-            const user = await getUsuarioActual()
-            const isStaff = user && (user.is_staff || user.is_superuser || (user.roles || []).length > 0)
-            if (isStaff) {
+            if (isStaff(user)) {
               const pubAdmin = await getPublicacionAdmin(id)
               if (!cancelled) {
                 setPublicacion(pubAdmin)
@@ -199,37 +193,10 @@ export default function DetallePublicacion() {
       }
     }
     fetchData()
-    return () => { cancelled = true }
-  }, [id])
-
-  useEffect(() => {
-    if (!publicacion) return
-    getComentariosPublicos(id)
-      .then((data) => setComentarios(data))
-      .catch(() => {})
-  }, [id, publicacion])
-
-  const handleEnviarComentario = async (e) => {
-    e.preventDefault()
-    const texto = nuevoComentario.trim()
-    if (!texto) return
-    setEnviandoComentario(true)
-    try {
-      await crearComentario(id, texto)
-      setNuevoComentario('')
-      setToast({
-        tipo: 'info',
-        mensaje: 'Tu comentario ha sido enviado y se encuentra en revisión por un moderador.',
-      })
-      setTimeout(() => setToast(null), 6000)
-    } catch (err) {
-      const msg = err.response?.data?.detail || err.response?.data?.contenido?.[0] || err.message
-      setToast({ tipo: 'error', mensaje: 'Error al enviar: ' + msg })
-      setTimeout(() => setToast(null), 6000)
-    } finally {
-      setEnviandoComentario(false)
+    return () => {
+      cancelled = true
     }
-  }
+  }, [id, user])
 
   if (loading) {
     return (
@@ -293,9 +260,15 @@ export default function DetallePublicacion() {
         {esPreview && (
           <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3 flex items-center gap-2">
             <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
-            Vista previa — En Revisión — No visible al público. Solo el administrador ve esto antes de publicar.
+            Vista previa — En Revisión — No visible al público. Solo el administrador ve esto antes de
+            publicar.
           </div>
         )}
 
@@ -322,30 +295,29 @@ export default function DetallePublicacion() {
                   {publicacion.usuario_nombre.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <span className="font-medium text-gray-700">
-                {publicacion.usuario_nombre}
-              </span>
+              <span className="font-medium text-gray-700">{publicacion.usuario_nombre}</span>
             </div>
           )}
           {fechaPub && (
             <div className="flex items-center gap-1.5">
               <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
               <span>{fechaPub}</span>
             </div>
           )}
           <span className="text-gray-300">·</span>
-          <span className="text-xs text-gray-400">
-            Creada el {fechaCreacion}
-          </span>
+          <span className="text-xs text-gray-400">Creada el {fechaCreacion}</span>
         </div>
 
         {publicacion.resumen && (
           <div className="bg-uniminuto-50/50 border border-uniminuto-100 rounded-xl p-5 mb-8">
-            <p className="text-gray-700 leading-relaxed italic">
-              {publicacion.resumen}
-            </p>
+            <p className="text-gray-700 leading-relaxed italic">{publicacion.resumen}</p>
           </div>
         )}
 
@@ -361,111 +333,7 @@ export default function DetallePublicacion() {
 
         <ImageGallery imagenes={imagenes} />
 
-        <div className="mt-12 pt-8 border-t border-gray-200">
-          {toast && (
-            <div
-              className={`mb-4 p-4 rounded-xl text-sm flex items-center gap-3 ${
-                toast.tipo === 'error'
-                  ? 'bg-red-50 border border-red-200 text-red-700'
-                  : 'bg-blue-50 border border-blue-200 text-blue-700'
-              }`}
-            >
-              {toast.tipo === 'error' ? (
-                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              )}
-              <span>{toast.mensaje}</span>
-              <button onClick={() => setToast(null)} className="ml-auto p-1 hover:opacity-70">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          )}
-
-          <h3 className="text-lg font-semibold text-gray-900 mb-5">
-            Comentarios
-            {comentarios.length > 0 && (
-              <span className="ml-2 text-sm font-normal text-gray-400">
-                ({comentarios.length})
-              </span>
-            )}
-          </h3>
-
-<form onSubmit={handleEnviarComentario} className="mb-8">
-              <div className="bg-white border border-gray-200 rounded-xl p-4">
-                <textarea
-                  value={nuevoComentario}
-                  onChange={(e) => setNuevoComentario(e.target.value.slice(0, 500))}
-                  placeholder="Escribe tu comentario..."
-                  rows={3}
-                  className="w-full resize-none border-0 p-0 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-0"
-                />
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-3">
-                  <p className="text-xs text-gray-400">
-                    Tu comentario será revisado por un moderador antes de publicarse.
-                  </p>
-                  <div className="text-xs text-slate-400">
-                    {nuevoComentario.length}/500
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={!nuevoComentario.trim() || enviandoComentario}
-                    className="px-4 py-2 bg-uniminuto-600 text-white text-sm font-medium rounded-lg hover:bg-uniminuto-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {enviandoComentario ? 'Enviando...' : 'Enviar'}
-                  </button>
-                </div>
-              </div>
-            </form>
-
-          {comentarios.length > 0 ? (
-            <div className="space-y-4">
-              {comentarios.map((c) => (
-                <div key={c.id} className="bg-white border border-gray-100 rounded-xl p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 bg-leaf-100 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-leaf-700">
-                        {c.usuario_nombre?.charAt(0).toUpperCase() || '?'}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {c.usuario_nombre}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {new Date(c.fechaCreacion).toLocaleDateString('es-CO', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-700 leading-relaxed pl-11">
-                    {c.contenido}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
-              <svg className="w-10 h-10 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              <p className="text-gray-500 text-sm">
-                Sé el primero en comentar esta publicación.
-              </p>
-            </div>
-          )}
-        </div>
+        <ComentariosSeccion publicacionId={id} />
       </article>
 
       <button
@@ -473,7 +341,12 @@ export default function DetallePublicacion() {
         className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 px-5 py-3 bg-uniminuto-600 text-white text-sm font-semibold rounded-full shadow-lg hover:bg-uniminuto-700 hover:shadow-xl transition-all"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.8}
+            d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+          />
         </svg>
         Enviar Solicitud
       </button>

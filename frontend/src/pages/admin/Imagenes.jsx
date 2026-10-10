@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import {
-  subirImagen,
-  getImagenes,
-  getPublicacionesAdmin,
-} from '../../services/publicacionesService.js'
+import { subirImagen, getImagenes, getPublicacionesAdmin } from '../../services/publicacionesService.js'
+import { useToast } from '../../context/ToastContext.jsx'
+import { getApiErrorMessage } from '../../utils/errores.js'
 
 export default function Imagenes() {
   const [imagenes, setImagenes] = useState([])
@@ -14,22 +12,20 @@ export default function Imagenes() {
   const [descripcion, setDescripcion] = useState('')
   const [uploading, setUploading] = useState(false)
   const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
 
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const [imgRes, pubRes] = await Promise.all([
-        getImagenes(),
-        getPublicacionesAdmin(),
-      ])
+      const [imgRes, pubRes] = await Promise.all([getImagenes(), getPublicacionesAdmin()])
       setImagenes(imgRes.results || imgRes)
       setPublicaciones(pubRes.results || pubRes)
     } catch (err) {
-      alert('Error al cargar imagenes: ' + err.message)
+      toast(getApiErrorMessage(err, 'Error al cargar imágenes.'), 'error')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [toast])
 
   useEffect(() => {
     fetchData()
@@ -44,7 +40,7 @@ export default function Imagenes() {
 
   const handleUpload = async () => {
     if (!selectedFile || !publicacionId) {
-      alert('Seleccione una imagen y una publicacion.')
+      toast('Seleccione una imagen y una publicación.', 'error')
       return
     }
     setUploading(true)
@@ -60,7 +56,7 @@ export default function Imagenes() {
       setDescripcion('')
       fetchData()
     } catch (err) {
-      alert('Error al subir la imagen: ' + (err.response?.data?.detail || err.message))
+      toast(getApiErrorMessage(err, 'Error al subir la imagen.'), 'error')
     } finally {
       setUploading(false)
     }
@@ -69,7 +65,7 @@ export default function Imagenes() {
   return (
     <div>
       <div className="page-header">
-        <h1>Imagenes</h1>
+        <h1>Imágenes</h1>
       </div>
 
       <div className="uploader">
@@ -91,7 +87,7 @@ export default function Imagenes() {
             value={publicacionId}
             onChange={(e) => setPublicacionId(e.target.value)}
           >
-            <option value="">Seleccionar publicacion...</option>
+            <option value="">Seleccionar publicación...</option>
             {publicaciones.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.titulo} ({p.estado})
@@ -100,7 +96,7 @@ export default function Imagenes() {
           </select>
           <input
             className="search-bar"
-            placeholder="Descripcion (opcional)"
+            placeholder="Descripción (opcional)"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
             style={{ maxWidth: 260 }}
@@ -130,7 +126,7 @@ export default function Imagenes() {
           ))}
           {imagenes.length === 0 && (
             <p style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--muted)' }}>
-              No hay imagenes cargadas.
+              No hay imágenes cargadas.
             </p>
           )}
         </div>

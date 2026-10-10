@@ -35,10 +35,15 @@ api.interceptors.response.use(
     const url = error.config?.url || ''
     const isAuthEndpoint = url.includes('/auth/login/') || url.includes('/auth/user/')
     if (error.response?.status === 401 && !isAuthEndpoint) {
-      window.location.href = '/login'
+      // Navegación vía router (sin recarga) con ?next= para volver (F2).
+      window.dispatchEvent(
+        new CustomEvent('auth:unauthorized', {
+          detail: { next: window.location.pathname + window.location.search },
+        })
+      )
     }
     return Promise.reject(error)
-  },
+  }
 )
 
 export default api
