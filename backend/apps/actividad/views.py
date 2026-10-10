@@ -14,4 +14,4 @@ class RegistroActividadViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = RegistroActividad.objects.select_related('usuario').all()
     serializer_class = RegistroActividadSerializer
     permission_classes = [IsStaffUser]
-    pagination_class = None
+    # Paginación por defecto (P2): el registro crece sin parar.

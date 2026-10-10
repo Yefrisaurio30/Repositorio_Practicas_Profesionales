@@ -119,7 +119,6 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaffOnly]
     search_fields = ['username', 'email', 'first_name', 'last_name']
     filterset_fields = ['is_staff', 'is_active']
-    pagination_class = None
 
     def get_permissions(self):
         if self.action in ('list', 'retrieve'):
@@ -208,7 +207,6 @@ class RolViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Rol.objects.all()
     serializer_class = RolSerializer
     permission_classes = [IsStaffOnly]
-    pagination_class = None
 
 
 class AsignarRolView(APIView):

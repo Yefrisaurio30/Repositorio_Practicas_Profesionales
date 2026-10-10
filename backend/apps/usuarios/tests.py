@@ -193,6 +193,40 @@ class L2StaffUnificadoTest(TestCase):
         self.assertIs(senales.ROLES_STAFF, central.ROLES_STAFF)
 
 
+class P2PaginacionTest(TestCase):
+    """Listados grandes devuelven página (count+results), no todo (P2)."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.client = APIClient()
+        self.staff = User.objects.create_user(
+            username='staff_p2', password='Stf12345!',
+            is_staff=True, is_superuser=True,
+        )
+        self.client.force_authenticate(user=self.staff)
+
+    def test_usuarios_paginado(self):
+        resp = self.client.get('/api/usuarios/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('results', resp.data)
+
+    def test_registros_paginado(self):
+        resp = self.client.get('/api/registros/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('results', resp.data)
+
+    def test_solicitudes_paginado(self):
+        resp = self.client.get('/api/solicitudes/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('results', resp.data)
+
+    def test_pendientes_paginado(self):
+        resp = self.client.get('/api/comentarios/pendientes/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('results', resp.data)
+
+
 class S7LoginThrottleTest(TestCase):
     """Fuerza bruta en login limitada a 5 intentos/min (S7)."""
 

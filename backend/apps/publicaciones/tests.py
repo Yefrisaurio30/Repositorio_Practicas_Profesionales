@@ -318,7 +318,7 @@ class CU08_ModerarComentarioTest(TestCase):
     def test_cola_pendientes(self):
         resp = self.client.get('/api/comentarios/pendientes/')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(len(resp.data), 1)
+        self.assertEqual(len(resp.data['results']), 1)
 
 
 # ======================================================================
@@ -866,7 +866,7 @@ class CU21_SolicitudesTest(TestCase):
         self.client.force_authenticate(user=self.staff)
         resp = self.client.get('/api/solicitudes/')
         self.assertEqual(resp.status_code, 200)
-        sol_id = resp.data[0]['id']
+        sol_id = resp.data['results'][0]['id']
         resp = self.client.patch(f'/api/solicitudes/{sol_id}/', {'estado': 'RESUELTA'}, format='json')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data['estado'], 'RESUELTA')

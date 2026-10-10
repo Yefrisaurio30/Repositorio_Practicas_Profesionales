@@ -17,7 +17,8 @@ export const eliminarUsuario = async (id) => {
 
 export const getRoles = async () => {
   const { data } = await api.get('/roles/')
-  return data
+  // La API pagina desde P2: normaliza a arreglo.
+  return data.results ?? data
 }
 
 export const asignarRol = async (usuarioId, rolNombre) => {

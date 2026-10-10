@@ -37,7 +37,6 @@ class SolicitudViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaffUser]
     search_fields = ['nombre', 'email', 'asunto', 'mensaje']
     filterset_fields = ['estado', 'tipo']
-    pagination_class = None
 
     def get_queryset(self):
         qs = Solicitud.objects.all()

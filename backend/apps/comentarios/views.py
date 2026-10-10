@@ -91,6 +91,10 @@ class ComentarioViewSet(viewsets.ModelViewSet):
         comentarios = Comentario.objects.filter(
             estado=Comentario.Estado.PENDIENTE,
         ).select_related('publicacion', 'usuario').order_by('fechaCreacion')
+        pagina = self.paginate_queryset(comentarios)
+        if pagina is not None:
+            serializer = ComentarioModerationSerializer(pagina, many=True)
+            return self.get_paginated_response(serializer.data)
         serializer = ComentarioModerationSerializer(comentarios, many=True)
         return Response(serializer.data)
 
