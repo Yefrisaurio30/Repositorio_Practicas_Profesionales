@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { getUsuarioActual, logout } from '../../services/authService.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { isStaff } from '../../utils/roles.js'
 
 const NAV_LINKS = [
@@ -27,11 +27,12 @@ function iniciales(nombre) {
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [user, setUser] = useState(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [logoutError, setLogoutError] = useState('')
   const menuRef = useRef(null)
   const location = useLocation()
   const navigate = useNavigate()
+  const { user, logout } = useAuth()
 
   const handleLogout = async () => {
     const res = await logout()
@@ -39,15 +40,10 @@ export default function Navbar() {
     if (res.ok) {
       navigate('/login', { replace: true })
     } else {
-      alert('No se pudo cerrar sesión: ' + res.error)
+      setLogoutError('No se pudo cerrar sesión: ' + res.error)
+      setTimeout(() => setLogoutError(''), 5000)
     }
   }
-
-  useEffect(() => {
-    let cancelled = false
-    getUsuarioActual().then((u) => { if (!cancelled) setUser(u) })
-    return () => { cancelled = true }
-  }, [location.pathname])
 
   useEffect(() => {
     setOpen(false)
@@ -238,6 +234,11 @@ export default function Navbar() {
           </div>
         )}
       </nav>
+      {logoutError && (
+        <div className="fixed top-20 right-4 z-50 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 shadow-lg">
+          {logoutError}
+        </div>
+      )}
     </>
   )
 }

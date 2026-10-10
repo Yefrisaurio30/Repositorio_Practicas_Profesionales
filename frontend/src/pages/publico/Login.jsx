@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { login, getUsuarioActual, logout } from '../../services/authService.js'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { isStaff } from '../../utils/roles.js'
 
 export default function Login() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const { user, login, logout, refresh } = useAuth()
   const [form, setForm] = useState({ email: '', password: '', remember: false })
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
@@ -13,25 +15,27 @@ export default function Login() {
 
   useEffect(() => {
     let cancelled = false
-    getUsuarioActual().then(async (u) => {
-      if (!cancelled && u) {
-        await logout()
-      }
-    })
+    if (user) {
+      logout().then(() => { if (!cancelled) refresh() })
+    }
     return () => { cancelled = true }
+    // Solo al montar: si ya había sesión, se cierra para mostrar el formulario.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const destinoTrasLogin = (u) => {
+    const next = searchParams.get('next')
+    if (next && next.startsWith('/') && !next.startsWith('//')) return next
+    return isStaff(u) ? '/admin/dashboard' : '/'
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
     try {
-      const user = await login(form.email, form.password, form.remember)
-      if (isStaff(user)) {
-        navigate('/admin/dashboard')
-      } else {
-        navigate('/')
-      }
+      const u = await login(form.email, form.password, form.remember)
+      navigate(destinoTrasLogin(u), { replace: true })
     } catch (err) {
       const msg = err.response?.data?.detail
       if (msg && msg.includes('Credenciales')) {
