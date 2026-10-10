@@ -217,7 +217,7 @@ class CU05_RegistrarUsuarioTest(TestCase):
 
 
 # ======================================================================
-# CU-06: Iniciar sesion
+# CU-06: Iniciar sesión
 # ======================================================================
 
 
@@ -793,7 +793,7 @@ class CU19_MisProyectosTest(TestCase):
 
 
 class CU20_LoginLogoutTest(TestCase):
-    """CU-20: Login acepta usuario o correo; logout cierra sesion."""
+    """CU-20: Login acepta usuario o correo; logout cierra sesión."""
 
     def setUp(self):
         self.client = APIClient()

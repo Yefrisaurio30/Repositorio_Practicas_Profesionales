@@ -79,7 +79,7 @@ function ComentarioCard({ comentario, activeTab, onRefresh }) {
                 <p className="text-xs text-slate-500">
                   {tiempoRelativo(comentario.fechaCreacion)}
                   <span className="mx-1">•</span>
-                  Project: {comentario.publicacion_titulo}
+                  Publicación: {comentario.publicacion_titulo}
                 </p>
               </div>
             </div>

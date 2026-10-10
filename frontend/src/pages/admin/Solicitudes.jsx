@@ -76,7 +76,7 @@ export default function Solicitudes() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Solicitudes y Peticiones</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Gestiona las PQRS recibidas desde el portal publico.
+          Gestiona las PQRS recibidas desde el portal público.
         </p>
       </div>
 

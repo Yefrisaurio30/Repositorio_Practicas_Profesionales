@@ -72,7 +72,7 @@ export default function Imagenes() {
   return (
     <div>
       <div className="page-header">
-        <h1>Imagenes</h1>
+        <h1>Imágenes</h1>
       </div>
 
       <div className="uploader">
@@ -94,7 +94,7 @@ export default function Imagenes() {
             value={publicacionId}
             onChange={(e) => setPublicacionId(e.target.value)}
           >
-            <option value="">Seleccionar publicacion...</option>
+            <option value="">Seleccionar publicación...</option>
             {publicaciones.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.titulo} ({p.estado})
@@ -103,7 +103,7 @@ export default function Imagenes() {
           </select>
           <input
             className="search-bar"
-            placeholder="Descripcion (opcional)"
+            placeholder="Descripción (opcional)"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
             style={{ maxWidth: 260 }}
@@ -133,7 +133,7 @@ export default function Imagenes() {
           ))}
           {imagenes.length === 0 && (
             <p style={{ gridColumn: '1/-1', textAlign: 'center', color: 'var(--muted)' }}>
-              No hay imagenes cargadas.
+              No hay imágenes cargadas.
             </p>
           )}
         </div>

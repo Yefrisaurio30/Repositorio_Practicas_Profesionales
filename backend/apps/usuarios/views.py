@@ -47,7 +47,7 @@ class LoginView(APIView):
         remember = request.data.get('remember', True)
         if not identifier or not password:
             return Response(
-                {'detail': 'Correo (o usuario) y contrasena son requeridos.'},
+                {'detail': 'Correo (o usuario) y contraseña son requeridos.'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         username = identifier
@@ -59,12 +59,12 @@ class LoginView(APIView):
         user = authenticate(request, username=username, password=password)
         if user is None:
             return Response(
-                {'detail': 'Credenciales invalidas.'},
+                {'detail': 'Credenciales inválidas.'},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
         if not user.is_active:
             return Response(
-                {'detail': 'La cuenta esta desactivada. Contacte al administrador.'},
+                {'detail': 'La cuenta está desactivada. Contacte al administrador.'},
                 status=status.HTTP_403_FORBIDDEN,
             )
         login(request, user)
@@ -72,7 +72,7 @@ class LoginView(APIView):
             request.session.set_expiry(0)
         RegistroActividad.objects.create(
             accion=RegistroActividad.Accion.LOGIN,
-            descripcion=f'{user.username} inicio sesion',
+            descripcion=f'{user.username} inició sesión',
             usuario=user,
         )
         return Response(UsuarioActualSerializer(user).data)
@@ -84,11 +84,11 @@ class LogoutView(APIView):
     def post(self, request):
         RegistroActividad.objects.create(
             accion=RegistroActividad.Accion.LOGOUT,
-            descripcion=f'{request.user.username} cerro sesion',
+            descripcion=f'{request.user.username} cerró sesión',
             usuario=request.user,
         )
         logout(request)
-        return Response({'detail': 'Sesion cerrada.'})
+        return Response({'detail': 'Sesión cerrada.'})
 
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
@@ -108,7 +108,7 @@ class RegistroView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response(
-            {'detail': 'Cuenta creada correctamente. Inicie sesion.', 'id': user.pk},
+            {'detail': 'Cuenta creada correctamente. Inicie sesión.', 'id': user.pk},
             status=status.HTTP_201_CREATED,
         )
 

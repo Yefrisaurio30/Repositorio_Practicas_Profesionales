@@ -22,7 +22,7 @@ function avatarColor(username) {
 function rolDe(u) {
   if (u.is_superuser) return { label: 'Admin', pill: 'bg-uniminuto-800 text-white' }
   if ((u.roles || []).includes('Superadmin')) return { label: 'Admin', pill: 'bg-uniminuto-800 text-white' }
-  if (u.is_staff || (u.roles || []).length > 0) return { label: 'Moderator', pill: 'bg-blue-600 text-white' }
+  if (u.is_staff || (u.roles || []).length > 0) return { label: 'Moderador', pill: 'bg-blue-600 text-white' }
   return { label: 'Usuario', pill: 'bg-slate-200 text-slate-600' }
 }
 

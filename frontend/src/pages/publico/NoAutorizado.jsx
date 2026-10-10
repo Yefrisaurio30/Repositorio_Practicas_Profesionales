@@ -35,7 +35,7 @@ export default function NoAutorizado() {
             onClick={handleLogout}
             className="w-full py-2.5 bg-uniminuto-600 text-white text-sm font-semibold rounded-xl hover:bg-uniminuto-700 transition-colors shadow-sm"
           >
-            Cerrar sesion
+            Cerrar sesión
           </button>
           <button
             onClick={() => navigate('/')}
