@@ -1,6 +1,12 @@
 import axios from 'axios'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+// VITE_API_BASE_URL se inyecta en Vercel. Fallback: en dev (/npm run dev/)
+// se usa el proxy local; en build de produccion se apunta a Render para que
+// el deploy funcione aunque la variable no este configurada en el dashboard.
+// (Es URL publica, visible en el bundle de todas formas: no es secreto.)
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV ? '/api' : 'https://repositorio-practicas-profesionales.onrender.com/api')
 
 const api = axios.create({
   baseURL: BASE_URL,

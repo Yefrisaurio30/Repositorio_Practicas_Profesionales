@@ -1,8 +1,9 @@
 import api from './api.js'
+import { listaDe, paginaDe } from '../utils/respuestas.js'
 
 export const getUsuarios = async (params) => {
   const { data } = await api.get('/usuarios/', { params })
-  return data
+  return paginaDe(data)
 }
 
 export const actualizarUsuario = async (id, payload) => {
@@ -18,7 +19,7 @@ export const eliminarUsuario = async (id) => {
 export const getRoles = async () => {
   const { data } = await api.get('/roles/')
   // La API pagina desde P2: normaliza a arreglo.
-  return data.results ?? data
+  return listaDe(data)
 }
 
 export const asignarRol = async (usuarioId, rolNombre) => {
