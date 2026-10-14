@@ -1,13 +1,14 @@
 import api from './api.js'
+import { objetoDe, paginaDe } from '../utils/respuestas.js'
 
 export const getDashboard = async () => {
   const { data } = await api.get('/reportes/dashboard/')
-  return data
+  return objetoDe(data)
 }
 
 export const getReportes = async (params) => {
   const { data } = await api.get('/reportes/', { params })
-  return data
+  return paginaDe(data)
 }
 
 export const crearReporte = async (payload) => {

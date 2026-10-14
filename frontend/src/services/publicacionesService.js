@@ -1,8 +1,9 @@
 import api from './api.js'
+import { listaDe, paginaDe } from '../utils/respuestas.js'
 
 export const getPublicadas = async (params = {}) => {
   const { data } = await api.get('/publicaciones/publicas/', { params })
-  return data
+  return paginaDe(data)
 }
 
 export const getDetalle = async (id) => {
@@ -17,19 +18,19 @@ export const getPublicacionAdmin = async (id) => {
 
 export const getPublicacionesAdmin = async (params = {}) => {
   const { data } = await api.get('/publicaciones/publicaciones/', { params })
-  return data
+  return paginaDe(data)
 }
 
 export const getCategorias = async () => {
   const { data } = await api.get('/publicaciones/categorias/')
-  return data
+  return listaDe(data)
 }
 
 export const getImagenesPublicacion = async (publicacionId) => {
   const { data } = await api.get('/imagenes/imagenes/', {
     params: { publicacion: publicacionId },
   })
-  return data
+  return listaDe(data)
 }
 
 export const crearPublicacion = async (payload) => {
@@ -80,7 +81,7 @@ export const subirImagen = async (file, data) => {
 
 export const getImagenes = async (params = {}) => {
   const { data } = await api.get('/imagenes/imagenes/', { params })
-  return data
+  return listaDe(data)
 }
 
 export default {

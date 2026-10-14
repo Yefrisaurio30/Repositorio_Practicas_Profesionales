@@ -1,4 +1,5 @@
 import api from './api.js'
+import { paginaDe } from '../utils/respuestas.js'
 
 export const crearSolicitud = async (payload) => {
   const { data } = await api.post('/solicitudes/nueva/', payload)
@@ -7,7 +8,7 @@ export const crearSolicitud = async (payload) => {
 
 export const getSolicitudes = async (params) => {
   const { data } = await api.get('/solicitudes/', { params })
-  return data
+  return paginaDe(data)
 }
 
 export const cambiarEstadoSolicitud = async (id, estado) => {

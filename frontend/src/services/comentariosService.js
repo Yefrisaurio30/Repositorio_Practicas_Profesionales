@@ -1,11 +1,12 @@
 import api from './api.js'
+import { listaDe, paginaDe } from '../utils/respuestas.js'
 
 export const getComentariosPublicos = async (publicacionId) => {
   const { data } = await api.get('/comentarios/publicos/', {
     params: { publicacion_id: publicacionId },
   })
   // La API pagina desde L5: normaliza a arreglo.
-  return data.results ?? data
+  return listaDe(data)
 }
 
 export const crearComentario = async (publicacionId, contenido) => {
@@ -18,12 +19,12 @@ export const crearComentario = async (publicacionId, contenido) => {
 
 export const getComentariosPendientes = async () => {
   const { data } = await api.get('/comentarios/pendientes/')
-  return data
+  return paginaDe(data)
 }
 
 export const getComentariosAdmin = async (params = {}) => {
   const { data } = await api.get('/comentarios/', { params })
-  return data
+  return paginaDe(data)
 }
 
 export const aprobarComentario = async (id) => {
