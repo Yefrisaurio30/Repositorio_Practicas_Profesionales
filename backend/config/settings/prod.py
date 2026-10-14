@@ -60,6 +60,11 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+# El frontend vive en otro dominio (Vercel) que la API (Render): sin
+# SameSite=None el navegador no envia las cookies de sesion/CSRF y el
+# login falla. None exige Secure (activo arriba).
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'None'
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
