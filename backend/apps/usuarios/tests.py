@@ -288,3 +288,14 @@ class S6PasswordValidatorsProdTest(TestCase):
         with override_settings(AUTH_PASSWORD_VALIDATORS=validadores), \
                 self.assertRaises(ValidationError):
             validate_password('1')
+
+
+class HealthViewTest(TestCase):
+    """El health check responde sin autenticación y reporta la BD."""
+
+    def test_health_200_con_base_datos_ok(self):
+        resp = self.client.get('/api/health/')
+        self.assertEqual(resp.status_code, 200)
+        cuerpo = resp.json()
+        self.assertEqual(cuerpo['status'], 'ok')
+        self.assertEqual(cuerpo['database'], 'ok')

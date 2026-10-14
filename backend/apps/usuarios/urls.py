@@ -8,6 +8,7 @@ from .views import (
     UsuarioViewSet,
     RolViewSet,
     AsignarRolView,
+    HealthView,
 )
 
 router = DefaultRouter()
@@ -15,6 +16,7 @@ router.register(r'usuarios', UsuarioViewSet, basename='usuario')
 router.register(r'roles', RolViewSet, basename='rol')
 
 urlpatterns = [
+    path('health/', HealthView.as_view(), name='health'),
     path('auth/login/', LoginView.as_view(), name='auth-login'),
     path('auth/logout/', LogoutView.as_view(), name='auth-logout'),
     path('auth/register/', RegistroView.as_view(), name='auth-register'),
