@@ -248,3 +248,34 @@ class AsignarRolView(APIView):
             )
         UsuarioRol.objects.filter(usuario_id=usuario_id, rol__nombre=rol_nombre).delete()
         return Response({'detail': 'Rol retirado.'})
+
+
+class HealthView(APIView):
+    """Diagnóstico de despliegue (sin secretos ni datos de usuarios).
+
+    Dice si Django vive y si la BD conecta. Render la usa como health
+    check; si la BD falla devuelve 503 en vez de reventar con 500.
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def get(self, request):
+        from django.conf import settings as dj_settings
+        from django.db import connection
+
+        try:
+            with connection.cursor() as cur:
+                cur.execute('SELECT 1')
+            base_datos = 'ok'
+        except Exception:
+            base_datos = 'error'
+        sano = base_datos == 'ok'
+        return Response(
+            {
+                'status': 'ok' if sano else 'degraded',
+                'database': base_datos,
+                'debug': dj_settings.DEBUG,
+            },
+            status=status.HTTP_200_OK if sano else status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
