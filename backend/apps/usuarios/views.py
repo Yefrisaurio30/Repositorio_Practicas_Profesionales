@@ -268,13 +268,18 @@ class HealthView(APIView):
             with connection.cursor() as cur:
                 cur.execute('SELECT 1')
             base_datos = 'ok'
-        except Exception:
+            detalle = ''
+        except Exception as exc:  # noqa: BLE001 - diagnostico temporal de despliegue
             base_datos = 'error'
+            # Solo tipo + mensaje (nunca incluye el password): permite
+            # distinguir DNS vs autenticacion vs timeout desde fuera.
+            detalle = f'{type(exc).__name__}: {exc}'[:200]
         sano = base_datos == 'ok'
         return Response(
             {
                 'status': 'ok' if sano else 'degraded',
                 'database': base_datos,
+                'db_error': detalle,
                 'debug': dj_settings.DEBUG,
             },
             status=status.HTTP_200_OK if sano else status.HTTP_503_SERVICE_UNAVAILABLE,
