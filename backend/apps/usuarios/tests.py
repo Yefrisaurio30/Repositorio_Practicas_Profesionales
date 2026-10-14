@@ -299,3 +299,11 @@ class HealthViewTest(TestCase):
         cuerpo = resp.json()
         self.assertEqual(cuerpo['status'], 'ok')
         self.assertEqual(cuerpo['database'], 'ok')
+
+
+class LogoutIdempotenteTest(TestCase):
+    """Cerrar sesión sin sesión responde 200 (no 403)."""
+
+    def test_logout_anonimo_200(self):
+        resp = self.client.post('/api/auth/logout/')
+        self.assertEqual(resp.status_code, 200)

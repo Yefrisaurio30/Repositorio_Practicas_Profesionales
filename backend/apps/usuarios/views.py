@@ -77,15 +77,17 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    # AllowAny: cerrar sesión sin sesión es idempotente (200), no un error.
+    permission_classes = [AllowAny]
 
     def post(self, request):
-        RegistroActividad.objects.create(
-            accion=RegistroActividad.Accion.LOGOUT,
-            descripcion=f'{request.user.username} cerró sesión',
-            usuario=request.user,
-        )
-        logout(request)
+        if request.user.is_authenticated:
+            RegistroActividad.objects.create(
+                accion=RegistroActividad.Accion.LOGOUT,
+                descripcion=f'{request.user.username} cerró sesión',
+                usuario=request.user,
+            )
+            logout(request)
         return Response({'detail': 'Sesión cerrada.'})
 
 
@@ -268,18 +270,13 @@ class HealthView(APIView):
             with connection.cursor() as cur:
                 cur.execute('SELECT 1')
             base_datos = 'ok'
-            detalle = ''
-        except Exception as exc:  # noqa: BLE001 - diagnostico temporal de despliegue
+        except Exception:
             base_datos = 'error'
-            # Solo tipo + mensaje (nunca incluye el password): permite
-            # distinguir DNS vs autenticacion vs timeout desde fuera.
-            detalle = f'{type(exc).__name__}: {exc}'[:200]
         sano = base_datos == 'ok'
         return Response(
             {
                 'status': 'ok' if sano else 'degraded',
                 'database': base_datos,
-                'db_error': detalle,
                 'debug': dj_settings.DEBUG,
             },
             status=status.HTTP_200_OK if sano else status.HTTP_503_SERVICE_UNAVAILABLE,
