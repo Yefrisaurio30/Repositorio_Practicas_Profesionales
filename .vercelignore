@@ -1,0 +1,12 @@
+# Solo se necesita frontend/ (Root Directory del proyecto).
+# Todo lo demas no se sube al deploy de Vercel.
+backend
+entrega
+manual_usuario
+docs
+*.rar
+*.tar.gz
+frontend/node_modules
+frontend/dist
+*.log
+.vercel

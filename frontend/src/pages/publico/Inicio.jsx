@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { getPublicadas, getCategorias } from '../../services/publicacionesService.js'
+import { mediaUrl } from '../../services/api.js'
 
 function mesAnio(fechaISO) {
   if (!fechaISO) return ''
@@ -21,7 +22,7 @@ function ProjectCard({ pub }) {
       <div className="aspect-[16/10] overflow-hidden relative bg-blue-50">
         {pub.portada ? (
           <img
-            src={pub.portada}
+            src={mediaUrl(pub.portada)}
             alt={pub.titulo}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />

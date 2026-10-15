@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { subirImagen, getImagenes, getPublicacionesAdmin } from '../../services/publicacionesService.js'
 import { useToast } from '../../context/ToastContext.jsx'
 import { getApiErrorMessage } from '../../utils/errores.js'
+import { mediaUrl } from '../../services/api.js'
 
 export default function Imagenes() {
   const [imagenes, setImagenes] = useState([])
@@ -113,7 +114,7 @@ export default function Imagenes() {
         <div className="preview-grid">
           {imagenes.map((img) => (
             <div key={img.id} className="preview-card">
-              <img src={img.ruta} alt={img.nombre} />
+              <img src={mediaUrl(img.ruta)} alt={img.nombre} />
               <div className="info">
                 <strong>{img.nombre}</strong>
                 <p>{img.publicacion_titulo}</p>

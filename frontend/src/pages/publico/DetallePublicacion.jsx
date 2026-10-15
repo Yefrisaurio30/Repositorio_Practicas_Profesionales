@@ -7,6 +7,7 @@ import {
 } from '../../services/publicacionesService.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { isStaff } from '../../utils/roles.js'
+import { mediaUrl } from '../../services/api.js'
 import SolicitudModal from '../../components/SolicitudModal.jsx'
 import ComentariosSeccion from '../../components/ComentariosSeccion.jsx'
 
@@ -86,7 +87,7 @@ function ImageGallery({ imagenes }) {
             className="group aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-200 hover:border-uniminuto-300 hover:shadow-md transition-all"
           >
             <img
-              src={img.ruta}
+              src={mediaUrl(img.ruta)}
               alt={img.nombre}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
               loading="lazy"
@@ -127,7 +128,7 @@ function ImageGallery({ imagenes }) {
               </svg>
             </button>
             <img
-              src={selected.ruta}
+              src={mediaUrl(selected.ruta)}
               alt={selected.nombre}
               className="w-full rounded-xl shadow-2xl object-contain max-h-[80vh]"
             />

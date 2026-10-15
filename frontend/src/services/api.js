@@ -1,12 +1,23 @@
 import axios from 'axios'
 import { getCsrfToken } from '../utils/csrf.js'
 
-// Siempre relativo: en dev lo resuelve el proxy de Vite y en produccion el
-// rewrite de vercel.json hacia Render. Asi el front y la API comparten site
-// (misma cookie first-party) y el JS puede leer la cookie CSRF — cross-site
-// document.cookie jamas ve las cookies del otro dominio y todo POST con
-// sesion fallaba con 403. Solo se usa URL absoluta si se define expresamente.
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+// URL base de la API. En Vercel se llama directo a Render (las cookies de
+// sesion ya viajan bien y el CSRF va por header desde utils/csrf.js, sin
+// leer cookies cross-site). Solo se usa relativa si se define expresamente.
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'https://repositorio-practicas-profesionales.onrender.com/api'
+
+/**
+ * Resuelve la URL de una imagen: en modo local el backend guarda rutas
+ * relativas (/media/...) que en el dominio del front no existen; se
+ * prefijan con el origen de la API. Las absolutas (Supabase) pasan intactas.
+ */
+export const mediaUrl = (ruta) => {
+  if (!ruta) return ruta
+  if (/^https?:\/\//i.test(ruta)) return ruta
+  const origen = BASE_URL.replace(/\/api\/?$/, '')
+  return `${origen}${ruta.startsWith('/') ? ruta : `/${ruta}`}`
+}
 
 const api = axios.create({
   baseURL: BASE_URL,

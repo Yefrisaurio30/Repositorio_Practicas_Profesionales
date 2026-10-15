@@ -7,6 +7,7 @@ import {
   actualizarPublicacion,
   subirImagen,
 } from '../services/publicacionesService.js'
+import { mediaUrl } from '../services/api.js'
 
 const SEDES = [
   'Antioquia - Chocó',
@@ -567,7 +568,7 @@ export default function FormularioPublicacion({
             <label className="block border-2 border-dashed border-slate-300 rounded-xl bg-slate-50/50 p-6 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/40 transition-colors">
               <input type="file" accept="image/*" className="hidden" onChange={onPortada} />
               {portadaActual ? (
-                <img src={portadaActual} alt="Portada" className="mx-auto max-h-40 rounded-lg object-cover" />
+                <img src={mediaUrl(portadaActual)} alt="Portada" className="mx-auto max-h-40 rounded-lg object-cover" />
               ) : (
                 <>
                   <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
@@ -602,7 +603,7 @@ export default function FormularioPublicacion({
               {galeriaSubidas.map((g) => (
                 <img
                   key={g.id}
-                  src={g.ruta}
+                  src={mediaUrl(g.ruta)}
                   alt={g.nombre}
                   className="h-20 w-full object-cover rounded-lg border border-slate-200"
                 />
