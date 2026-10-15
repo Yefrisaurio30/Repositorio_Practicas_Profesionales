@@ -73,7 +73,14 @@ class LoginView(APIView):
             descripcion=f'{user.username} inició sesión',
             usuario=user,
         )
-        return Response(UsuarioActualSerializer(user).data)
+        # El token va tambien en el cuerpo: en despliegue cross-site el JS no
+        # puede leer la cookie del otro dominio (document.cookie), asi que los
+        # POST con sesion fallarian con 403. get_token() tras login() devuelve
+        # el secreto ya rotado.
+        from django.middleware.csrf import get_token
+        datos = UsuarioActualSerializer(user).data
+        datos['csrf_token'] = get_token(request)
+        return Response(datos)
 
 
 class LogoutView(APIView):
@@ -96,7 +103,11 @@ class UsuarioActualView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response(UsuarioActualSerializer(request.user).data)
+        # Incluye el token CSRF vigente (ver comentario en LoginView).
+        from django.middleware.csrf import get_token
+        datos = UsuarioActualSerializer(request.user).data
+        datos['csrf_token'] = get_token(request)
+        return Response(datos)
 
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getCsrfToken } from '../utils/csrf.js'
 
 // Siempre relativo: en dev lo resuelve el proxy de Vite y en produccion el
 // rewrite de vercel.json hacia Render. Asi el front y la API comparten site
@@ -15,18 +16,10 @@ const api = axios.create({
   withCredentials: true,
 })
 
-export const getCSRFToken = () => {
-  const name = 'csrftoken'
-  const cookies = document.cookie.split(';')
-  for (let c of cookies) {
-    c = c.trim()
-    if (c.startsWith(name + '=')) return c.substring(name.length + 1)
-  }
-  return null
-}
+export const getCSRFToken = getCsrfToken
 
 api.interceptors.request.use((config) => {
-  const csrf = getCSRFToken()
+  const csrf = getCsrfToken()
   if (csrf) {
     config.headers['X-CSRFToken'] = csrf
   }
