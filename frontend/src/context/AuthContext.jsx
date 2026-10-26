@@ -11,6 +11,7 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const navigate = useNavigate()
 
   const refresh = useCallback(async () => {
@@ -25,10 +26,16 @@ export function AuthProvider({ children }) {
     let cancelled = false
     getUsuarioActual()
       .then((u) => {
-        if (!cancelled) setUser(u)
+        if (!cancelled) {
+          setUser(u)
+          setError(false)
+        }
       })
       .catch(() => {
-        if (!cancelled) setUser(null)
+        if (!cancelled) {
+          setUser(null)
+          setError(true)
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -62,7 +69,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, refresh }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, loading, error, login, logout, refresh }}>{children}</AuthContext.Provider>
   )
 }
 
