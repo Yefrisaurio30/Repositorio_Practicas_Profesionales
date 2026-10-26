@@ -1,5 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { useAuth } from './context/AuthContext.jsx'
+import LoadingScreen from './components/LoadingScreen.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ToastProvider } from './context/ToastContext.jsx'
 import PublicRouter from './routes/AppRouter.jsx'
@@ -39,18 +41,27 @@ function AdminRouter() {
   )
 }
 
+function AuthGate({ children }) {
+  const { loading, error } = useAuth()
+  if (loading) return <LoadingScreen error={false} />
+  if (error) return <LoadingScreen error={true} onRetry={() => window.location.reload()} />
+  return children
+}
+
 export default function App() {
   return (
     <Router>
       <ToastProvider>
         <AuthProvider>
-          <Routes>
-            <Route path="/admin/*" element={<AdminRouter />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/registro" element={<Registro />} />
-            <Route path="/unauthorized" element={<NoAutorizado />} />
-            <Route path="*" element={<PublicRouter />} />
-          </Routes>
+          <AuthGate>
+            <Routes>
+              <Route path="/admin/*" element={<AdminRouter />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/registro" element={<Registro />} />
+              <Route path="/unauthorized" element={<NoAutorizado />} />
+              <Route path="*" element={<PublicRouter />} />
+            </Routes>
+          </AuthGate>
         </AuthProvider>
       </ToastProvider>
     </Router>

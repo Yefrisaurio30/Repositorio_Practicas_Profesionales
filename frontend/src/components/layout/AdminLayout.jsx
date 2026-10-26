@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useToast } from '../../context/ToastContext.jsx'
@@ -70,6 +70,29 @@ export default function AdminLayout({ children }) {
   const { user, logout } = useAuth()
   const { toast } = useToast()
 
+  const closeSidebar = useCallback(() => setSidebarOpen(false), [])
+  const openSidebar = useCallback(() => setSidebarOpen(true), [])
+
+  // Bloquear scroll del body mientras el menú está abierto en móvil
+  useEffect(() => {
+    if (sidebarOpen) {
+      const prev = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = prev
+      }
+    }
+  }, [sidebarOpen])
+
+  // Cerrar con Escape
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') setSidebarOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   const handleLogout = async () => {
     const res = await logout()
     if (res.ok) {
@@ -87,7 +110,11 @@ export default function AdminLayout({ children }) {
   return (
     <div className="flex min-h-screen bg-[#f2f5fa]">
       {sidebarOpen && (
-        <div className="fixed inset-0 z-30 bg-black/40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          onClick={closeSidebar}
+          aria-hidden="true"
+        />
       )}
 
       <aside
@@ -95,8 +122,8 @@ export default function AdminLayout({ children }) {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        <div className="px-5 pt-5 pb-4">
-          <Link to="/admin/dashboard" className="flex items-center gap-3">
+        <div className="px-5 pt-5 pb-4 flex items-center justify-between">
+          <Link to="/admin/dashboard" className="flex items-center gap-3 min-w-0" onClick={closeSidebar}>
             <div className="w-10 h-10 rounded-full bg-uniminuto-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
               {iniciales(nombreMostrar)}
             </div>
@@ -107,12 +134,23 @@ export default function AdminLayout({ children }) {
               <span className="text-xs text-slate-500 leading-tight">Portal Universitario</span>
             </div>
           </Link>
+          <button
+            type="button"
+            onClick={closeSidebar}
+            className="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label="Cerrar menú"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         <div className="px-4 pb-2">
           <Link
             to="/admin/publicaciones/nueva"
             className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-uniminuto-600 text-white text-sm font-semibold rounded-lg hover:bg-uniminuto-700 transition-colors shadow-sm"
+            onClick={closeSidebar}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -132,7 +170,7 @@ export default function AdminLayout({ children }) {
                   isActive ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100'
                 }`
               }
-              onClick={() => setSidebarOpen(false)}
+              onClick={closeSidebar}
             >
               <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={item.icon} />
@@ -144,8 +182,11 @@ export default function AdminLayout({ children }) {
 
         <div className="p-4 border-t border-slate-100 space-y-1">
           <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-[14px] font-medium text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+            onClick={() => {
+              closeSidebar()
+              handleLogout()
+            }}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-[14px] font-medium text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer min-h-[44px]"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -163,9 +204,11 @@ export default function AdminLayout({ children }) {
       <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-white border-b border-slate-200 px-4 sm:px-8 py-3 flex items-center gap-3 sticky top-0 z-20">
           <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="lg:hidden p-2 -ml-2 rounded-lg text-slate-600 hover:bg-slate-100"
+            type="button"
+            onClick={() => setSidebarOpen((v) => !v)}
+            className="lg:hidden p-2 -ml-2 rounded-lg text-slate-600 hover:bg-slate-100 min-w-[44px] min-h-[44px] flex items-center justify-center"
             aria-label="Abrir menú"
+            aria-expanded={sidebarOpen}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
