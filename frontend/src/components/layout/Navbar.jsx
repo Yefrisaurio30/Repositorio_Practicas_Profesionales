@@ -203,7 +203,9 @@ export default function Navbar() {
             </div>
 
             <button
-              onClick={() => setOpen(!open)}
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              onMouseDown={(e) => e.stopPropagation()}
               className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
               aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
             >
